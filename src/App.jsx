@@ -154,44 +154,21 @@ export default function App() {
         onSearchChange={query => { setSearchQuery(query); setActiveCategory('funebres'); setPriceRange(catalogMaxPrice); window.location.hash = 'catalog-section'; }}
       />
 
-      {page === 'account' ? <AccountSection /> : page === 'home' ? <HomePage onSelectProduct={setSelectedProduct} onBrowse={browseCatalog} /> : <>
-      <div className="catalog-breadcrumb"><div className="container"><Home size={12} aria-hidden="true" /><ChevronRight size={12} aria-hidden="true" /><a href="#catalog-section" onClick={() => browseCatalog()}>TIENDA DE FLORES</a><ChevronRight size={12} aria-hidden="true" /><strong>{clientData.categories.find(c => c.slug === activeCategory)?.name}</strong></div></div>
-      <div className="catalog-display-bar"><div className="container"><CatalogViewToggle view={catalogView} onViewChange={setCatalogView} /></div></div>
-
-      {/* Main 2-Column Layout */}
-      <main style={{ flex: 1, paddingBottom: '3rem' }}>
-        <div className="container app-main-grid">
-          {/* Left Column: Sidebar Accordion & Price Filter */}
-          <LeftSidebar
-            activeCategory={activeCategory}
-            onSelectCategory={category => browseCatalog({ category })}
-            priceRange={priceRange}
-            onPriceChange={setPriceRange}
-          />
-
-          {/* Right Column: Product Grid & Header Controls */}
-          <div className="catalog-column">
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '4rem 0', color: '#64748b' }}>
-                Cargando catálogo oficial Corona de Flores...
-              </div>
-            ) : (
-              <ProductGrid
-                products={products}
-                category={activeCategory}
-                onSelectProduct={setSelectedProduct}
-                onAddToCart={(p) => handleAddToCart(p, 1, p.variants?.[0] || null)}
-                view={catalogView}
-                onViewChange={setCatalogView}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-              />
-            )}
-          </div>
-        </div>
-      </main>
-
-      </>}
+      {page === 'account' ? (
+        <AccountSection />
+      ) : (
+        <HomePage
+          onSelectProduct={setSelectedProduct}
+          activeCategory={activeCategory}
+          onSelectCategory={category => browseCatalog({ category })}
+          searchQuery={searchQuery}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          catalogView={catalogView}
+          onViewChange={setCatalogView}
+          onAddToCart={(p) => handleAddToCart(p, 1, p.variants?.[0] || null)}
+        />
+      )}
 
       {/* Footer */}
       <Footer onSelectCategory={category => browseCatalog({ category })} />

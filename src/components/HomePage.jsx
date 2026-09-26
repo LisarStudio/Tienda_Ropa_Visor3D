@@ -1,154 +1,276 @@
-import React from 'react';
-import { ArrowRight, Flower2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Flower2, LayoutGrid, List, Sparkles, Clock, ShieldCheck, Heart } from 'lucide-react';
 import { clientData } from '../data/clientData';
 import { productRepository } from '../services/productRepository';
 import { ProductCard } from './ProductCard';
 import './HomePage.css';
 
 const allProducts = clientData.products;
-const collections = [
-  { slug: 'coronas', name: 'Coronas', id: 'legacy-1326' },
-  { slug: 'arreglos', name: 'Arreglos', id: 'legacy-797' },
-  { slug: 'ofrendas-florales', name: 'Ofrendas florales', id: 'legacy-878' },
-  { slug: 'cubre-urnas', name: 'Cubre urnas', id: 'legacy-800' },
-  { slug: 'ramos', name: 'Ramos', id: 'legacy-881' },
+
+const categoryCollections = [
+  { slug: 'funebres', name: 'Catálogo completo', count: allProducts.length, image: allProducts[0]?.image },
+  { slug: 'coronas', name: 'Coronas', count: allProducts.filter(p => p.originalCategorySlugs.includes('coronas')).length, id: 'legacy-1326' },
+  { slug: 'arreglos', name: 'Arreglos', count: allProducts.filter(p => p.originalCategorySlugs.includes('arreglos')).length, id: 'legacy-797' },
+  { slug: 'ofrendas-florales', name: 'Ofrendas florales', count: allProducts.filter(p => p.originalCategorySlugs.includes('ofrendas-florales')).length, id: 'legacy-878' },
+  { slug: 'cubre-urnas', name: 'Cubre urnas', count: allProducts.filter(p => p.originalCategorySlugs.includes('cubre-urnas')).length, id: 'legacy-800' },
+  { slug: 'ramos', name: 'Ramos', count: allProducts.filter(p => p.originalCategorySlugs.includes('ramos')).length, id: 'legacy-881' },
 ].map(c => ({
   ...c,
-  image: allProducts.find(p => p.id === c.id)?.image || allProducts[0].image,
-  products: allProducts.filter(p => p.originalCategorySlugs.includes(c.slug))
+  image: c.image || allProducts.find(p => p.id === c.id)?.image || allProducts[0].image
 }));
 
-const selectProducts = ids => ids.map(id => allProducts.find(p => p.id === id)).filter(Boolean);
-const featured = selectProducts(['legacy-803', 'legacy-792', 'legacy-884', 'legacy-797', 'legacy-800', 'legacy-881', 'legacy-878', 'legacy-880']);
-
-function ProductCollection({ title, eyebrow, products, onSelectProduct, onBrowse, category }) {
-  return (
-    <section className="home-section home-product-section">
-      <div className="home-section-heading">
-        <div>
-          <p className="home-eyebrow">{eyebrow}</p>
-          <h2>{title}</h2>
-        </div>
-        <button className="home-text-link" onClick={() => onBrowse({ category })}>
-          Ver colección <ArrowRight size={17} />
-        </button>
-      </div>
-      <div className="home-products-grid">
-        {products.map(p => (
-          <ProductCard key={p.id} product={p} onSelectProduct={onSelectProduct} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function HomePage({ onSelectProduct, onBrowse }) {
+export function HomePage({
+  onSelectProduct,
+  activeCategory: externalCategory,
+  onSelectCategory: externalSelectCategory,
+  searchQuery = '',
+  sortBy: externalSortBy,
+  onSortChange: externalSortChange,
+  catalogView: externalView,
+  onViewChange: externalViewChange
+}) {
   const brand = productRepository.getBrandInfo();
-  const standout = allProducts.find(p => p.id === 'legacy-1326');
+  const [internalCategory, setInternalCategory] = useState('funebres');
+  const [internalSortBy, setInternalSortBy] = useState('featured');
+  const [internalView, setInternalView] = useState('grid');
+
+  const activeCategory = externalCategory !== undefined ? externalCategory : internalCategory;
+  const sortBy = externalSortBy !== undefined ? externalSortBy : internalSortBy;
+  const view = externalView !== undefined ? externalView : internalView;
+
+  const handleCategoryChange = (slug) => {
+    if (externalSelectCategory) {
+      externalSelectCategory(slug);
+    } else {
+      setInternalCategory(slug);
+    }
+  };
+
+  const handleSortChange = (val) => {
+    if (externalSortChange) {
+      externalSortChange(val);
+    } else {
+      setInternalSortBy(val);
+    }
+  };
+
+  const handleViewChange = (v) => {
+    if (externalViewChange) {
+      externalViewChange(v);
+    } else {
+      setInternalView(v);
+    }
+  };
+
+  // Filtrar y ordenar productos para mostrar todos los correspondientes
+  const displayedProducts = useMemo(() => {
+    let list = [...allProducts];
+
+    // Filtrar por categoría
+    if (activeCategory && activeCategory !== 'funebres') {
+      list = list.filter(p => p.originalCategorySlugs.includes(activeCategory));
+    }
+
+    // Filtrar por búsqueda si existe
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q)
+      );
+    }
+
+    // Ordenar
+    if (sortBy === 'price-low') {
+      list.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-high') {
+      list.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'title') {
+      list.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return list;
+  }, [activeCategory, searchQuery, sortBy]);
+
+  const activeCategoryObj = categoryCollections.find(c => c.slug === activeCategory) || categoryCollections[0];
 
   return (
     <main className="home-page" id="inicio">
       <div className="home-wrap">
-        {/* Banner de bienvenida con el Logo Oficial Centrado */}
+        {/* 1. Banner de bienvenida con Logo Oficial Centrado y Grande */}
         <section className="home-welcome home-welcome-brand">
           <div className="home-brand-emblem-wrap">
             <img
               src={brand.logo}
               alt={brand.name}
               className="home-brand-main-logo"
-              width="260"
-              height="115"
+              width="680"
+              height="245"
             />
           </div>
           <p className="home-eyebrow">FLORES QUE EXPRESAN CARIÑO, RESPETO Y COMPAÑÍA</p>
           <h1>Floristería en Santiago <span>Un homenaje hecho con flores</span></h1>
         </section>
 
-        {/* Categorías circulares */}
+        {/* 2. Barra de Categorías Circulares Interactivas */}
         <nav className="home-collections" aria-label="Colecciones de flores">
-          {collections.map(c => (
-            <button key={c.slug} onClick={() => onBrowse({ category: c.slug })}>
-              <span className="home-category-image">
-                <img src={c.image} alt={c.name} width="150" height="150" loading="lazy" />
-              </span>
-              <strong>{c.name}</strong>
-              <span>{c.products.length} productos</span>
-            </button>
-          ))}
+          {categoryCollections.map(c => {
+            const isSelected = activeCategory === c.slug;
+            return (
+              <button
+                key={c.slug}
+                type="button"
+                className={`home-category-bubble${isSelected ? ' is-active' : ''}`}
+                onClick={() => handleCategoryChange(c.slug)}
+                aria-pressed={isSelected}
+              >
+                <span className="home-category-image">
+                  <img src={c.image} alt={c.name} width="150" height="150" loading="lazy" />
+                </span>
+                <strong>{c.name}</strong>
+                <span>{c.count} productos</span>
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Catálogo de Productos Inmediato */}
-        <section className="home-section home-featured" id="catalog-section">
-          <div className="home-section-heading">
+        {/* 3. Catálogo Completo Fusionado en Portada (TODOS los productos disponibles directamente) */}
+        <section className="home-section home-complete-catalog" id="catalog-section" aria-labelledby="catalog-title">
+          <div className="catalog-header-bar">
             <div>
-              <p className="home-eyebrow">Nuestra selección</p>
-              <h2>Flores para un homenaje especial</h2>
+              <div className="catalog-badge-row">
+                <span className="catalog-pill">
+                  <Sparkles size={14} /> {activeCategoryObj.name}
+                </span>
+                <span className="catalog-count-pill">
+                  {displayedProducts.length} productos disponibles
+                </span>
+              </div>
+              <h2 id="catalog-title">
+                {activeCategory === 'funebres' ? 'Catálogo Completo de Arreglos y Coronas Fúnebres' : activeCategoryObj.name}
+              </h2>
+              <p className="catalog-subtitle">
+                Despacho express 24/7 a todos los velatorios, iglesias y domicilios de Santiago. Cinta o tarjeta de condolencia incluida.
+              </p>
             </div>
-            <button className="home-text-link" onClick={() => onBrowse()}>
-              Ver todos <ArrowRight size={17} />
-            </button>
+
+            {/* Controles de ordenamiento y vista */}
+            <div className="catalog-controls">
+              <div className="catalog-sort-box">
+                <label htmlFor="home-sort">Ordenar:</label>
+                <select
+                  id="home-sort"
+                  value={sortBy}
+                  onChange={e => handleSortChange(e.target.value)}
+                >
+                  <option value="featured">Destacados</option>
+                  <option value="price-low">Precio: Menor a Mayor</option>
+                  <option value="price-high">Precio: Mayor a Menor</option>
+                  <option value="title">Nombre A-Z</option>
+                </select>
+              </div>
+
+              <div className="catalog-view-toggle">
+                <button
+                  type="button"
+                  aria-label="Ver en cuadrícula"
+                  className={view === 'grid' ? 'is-active' : ''}
+                  onClick={() => handleViewChange('grid')}
+                >
+                  <LayoutGrid size={18} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Ver en lista"
+                  className={view === 'list' ? 'is-active' : ''}
+                  onClick={() => handleViewChange('list')}
+                >
+                  <List size={18} />
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="home-featured-layout">
-            <div className="home-standout">
-              <span className="home-featured-label">La elegancia de las flores blancas</span>
-              <ProductCard product={standout} onSelectProduct={onSelectProduct} />
-            </div>
-            <div className="home-featured-grid">
-              {featured.map(p => (
-                <ProductCard key={p.id} product={p} onSelectProduct={onSelectProduct} />
+
+          {/* Cuadrícula con TODOS los productos */}
+          {displayedProducts.length > 0 ? (
+            <div className={`catalog-products-container view-${view}`}>
+              {displayedProducts.map((p, index) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  onSelectProduct={onSelectProduct}
+                  priority={index < 4}
+                />
               ))}
             </div>
+          ) : (
+            <div className="catalog-empty-notice">
+              <p>No se encontraron productos en esta categoría o con la búsqueda actual.</p>
+              <button
+                type="button"
+                className="btn-reset-filters"
+                onClick={() => handleCategoryChange('funebres')}
+              >
+                Ver todo el catálogo
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* 4. Ventajas del Servicio */}
+        <section className="home-features-banner">
+          <div className="feature-item">
+            <Clock size={28} className="feature-icon" />
+            <div>
+              <strong>Despacho Express 24/7</strong>
+              <small>Entrega puntual en cualquier funeraria o velatorio de Santiago</small>
+            </div>
+          </div>
+          <div className="feature-item">
+            <Heart size={28} className="feature-icon" />
+            <div>
+              <strong>Cinta o Tarjeta Incluida</strong>
+              <small>Mensaje de condolencias personalizado sin costo adicional</small>
+            </div>
+          </div>
+          <div className="feature-item">
+            <ShieldCheck size={28} className="feature-icon" />
+            <div>
+              <strong>Pago Seguro Flow / Webpay</strong>
+              <small>Tarjetas de débito, crédito y transferencia bancaria</small>
+            </div>
           </div>
         </section>
 
-        {/* Colección de Coronas */}
-        <ProductCollection
-          title="Nuestra colección de coronas"
-          eyebrow="Cariño y respeto en cada detalle"
-          products={selectProducts(['legacy-803', 'legacy-884', 'legacy-1324', 'legacy-888', 'legacy-787'])}
-          onSelectProduct={onSelectProduct}
-          onBrowse={onBrowse}
-          category="coronas"
-        />
-
-        {/* Colección de Arreglos y Ramos */}
-        <ProductCollection
-          title="Arreglos y ramos para acompañar"
-          eyebrow="Pequeños gestos, grandes sentimientos"
-          products={selectProducts(['legacy-792', 'legacy-797', 'legacy-881', 'legacy-882', 'archive-573'])}
-          onSelectProduct={onSelectProduct}
-          onBrowse={onBrowse}
-          category="funebres"
-        />
-
-        {/* Preguntas frecuentes */}
+        {/* 5. Preguntas Frecuentes */}
         <section className="home-faq home-section">
-          <p className="home-eyebrow">Te ayudamos a elegir</p>
+          <p className="home-eyebrow">INFORMACIÓN DE COMPRA Y SERVICIO</p>
           <h2>Preguntas frecuentes</h2>
-          <details>
-            <summary>¿Qué tipos de arreglos puedo encontrar?</summary>
-            <p>Nuestro catálogo reúne coronas, arreglos, ofrendas florales, cubre urnas y ramos. Puedes explorar cada colección o ver los {allProducts.length} productos en la tienda.</p>
+          <details open>
+            <summary>¿En cuánto tiempo se realiza la entrega?</summary>
+            <p>Confeccionamos y despachamos en un plazo promedio de 2 a 4 horas a funerarias, iglesias y velatorios en todo Santiago (Sendero, Parque del Recuerdo, Cementerio General, San Sebastián, etc.).</p>
           </details>
           <details>
-            <summary>¿Puedo elegir el color de las flores?</summary>
-            <p>Algunos diseños tienen variantes de color. Abre la ficha del producto para consultar las opciones disponibles y su precio.</p>
+            <summary>¿Cómo añado el mensaje de la tarjeta o cinta?</summary>
+            <p>Al hacer clic en "Comprar ahora" o al ir al Carrito, completarás un formulario de 3 preguntas clave: (1) ¿A quién entrega?, (2) Dirección o Velatorio, y (3) Texto de la tarjeta/cinta.</p>
           </details>
           <details>
-            <summary>¿Dónde puedo consultar mis compras anteriores?</summary>
-            <p>En <a href="#mi-cuenta">Mi cuenta</a> encontrarás el acceso a la cuenta de la tienda original para consultar tus compras anteriores.</p>
+            <summary>¿Qué medios de pago aceptan?</summary>
+            <p>Aceptamos Webpay Plus, tarjetas de crédito, débito Redcompra y transferencias electrónicas a través de la pasarela segura Flow.cl.</p>
           </details>
         </section>
 
-        {/* Pie de cierre */}
+        {/* 6. Pie de Cierre */}
         <section className="home-closing">
           <Flower2 size={36} />
           <div>
-            <h2>Encuentra las flores para tu homenaje</h2>
-            <p>Explora nuestras colecciones y elige un detalle con significado.</p>
+            <h2>Corona de Flores Santiago</h2>
+            <p>Floristería especializada en coronas fúnebres, arreglos y condolencias 24/7.</p>
           </div>
-          <button className="home-dark-button" onClick={() => onBrowse()}>
-            Ver catálogo completo <ArrowRight size={18} />
-          </button>
+          <a href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="home-whatsapp-cta">
+            WhatsApp {brand.whatsappFormatted}
+          </a>
         </section>
       </div>
     </main>
