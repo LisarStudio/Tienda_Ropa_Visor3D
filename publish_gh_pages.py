@@ -1,6 +1,5 @@
 import os
 import subprocess
-import shutil
 
 repo_dir = os.path.dirname(os.path.abspath(__file__))
 dist_dir = os.path.join(repo_dir, "dist")
@@ -12,35 +11,10 @@ if not os.path.exists(dist_dir):
     print("Error: dist folder not found after build.")
     exit(1)
 
-git_in_dist = os.path.join(dist_dir, ".git")
-if os.path.exists(git_in_dist):
-    shutil.rmtree(git_in_dist, ignore_errors=True)
-
 with open(os.path.join(dist_dir, ".nojekyll"), "w", encoding="utf-8") as f:
     f.write("")
 
-print("Preparing gh-pages branch from dist...")
-os.chdir(dist_dir)
-subprocess.run(["git", "init"], check=True)
-subprocess.run(["git", "config", "user.email", "contacto@lisarstudio.com"], check=True)
-subprocess.run(["git", "config", "user.name", "Lisar Studio"], check=True)
-subprocess.run(["git", "add", "-A"], check=True)
-subprocess.run(["git", "commit", "-m", "Deploy Corona de Flores live demo to GitHub Pages"], check=True)
-subprocess.run(["git", "branch", "-M", "gh-pages"], check=True)
-subprocess.run(["git", "remote", "add", "origin", "https://github.com/LisarStudio/lisarstudio-demo.git"], check=True)
-subprocess.run(["git", "config", "http.postBuffer", "524288000"], check=True)
-subprocess.run(["git", "config", "http.version", "HTTP/1.1"], check=True)
-
-print("Force pushing dist to gh-pages...")
-for attempt in range(1, 4):
-    try:
-        subprocess.run(["git", "push", "-f", "origin", "gh-pages"], check=True)
-        print("Deployment to GitHub Pages successfully completed!")
-        break
-    except subprocess.CalledProcessError:
-        if attempt == 3:
-            raise
-        print(f"Push attempt {attempt} failed, retrying in 3 seconds...")
-        import time
-        time.sleep(3)
-
+print("Force pushing dist to GitHub Pages branch (gh-pages)...")
+cmd = "npx --yes gh-pages -d dist --dotfiles -f"
+subprocess.run(cmd, cwd=repo_dir, check=True, shell=True)
+print("Deployment to GitHub Pages successfully completed!")
