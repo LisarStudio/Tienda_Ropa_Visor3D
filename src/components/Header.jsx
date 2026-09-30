@@ -1,51 +1,203 @@
 import React, { useRef, useState } from 'react';
-import { ShoppingCart, Search, User, Menu, X, ChevronDown } from 'lucide-react';
-import { productRepository } from '../services/productRepository';
+import { ShoppingBag, Search, User, Menu, X, Sparkles, ChevronDown, Heart } from 'lucide-react';
 import { clientData } from '../data/clientData';
 import './Header.css';
 
 export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, onSearchChange }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInput = useRef(null);
-  const brand = productRepository.getBrandInfo();
+  const brand = clientData.brand;
+
   const toggleSearch = () => {
     setSearchOpen(open => !open);
-    setMobileMenuOpen(false);
-    requestAnimationFrame(() => searchInput.current?.focus());
+    if (!searchOpen) {
+      setTimeout(() => searchInput.current?.focus(), 100);
+    }
   };
-  return <header className="store-header">
-    <div className="store-topbar"><div className="container"><a href="#mi-cuenta">Mi Cuenta</a><a className="store-top-email" href={`mailto:${brand.email}`}>{brand.email}</a><span>FLORISTERÍA FÚNEBRE CHILE</span></div></div>
-    <div className="container store-header-row">
-      <button type="button" className="mobile-toggle" aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={mobileMenuOpen} aria-controls="store-navigation" onClick={() => { setMobileMenuOpen(open => !open); setSearchOpen(false); }}>{mobileMenuOpen ? <X size={23} /> : <Menu size={23} />}</button>
-      <a href="#inicio" className="store-brand" onClick={() => setMobileMenuOpen(false)}>
-        <img src={brand.logo} alt={brand.name} width="52" height="52" />
-        <span className="store-brand-copy"><span className="store-brand-name">Corona de <span>Flores</span></span><span className="store-brand-tagline">FLORISTERÍA FÚNEBRE CHILE</span></span>
-      </a>
-      <form className={`store-search${searchOpen ? ' is-open' : ''}`} role="search" onSubmit={e => { e.preventDefault(); onSearchChange(searchQuery); setSearchOpen(false); }}>
-        <input ref={searchInput} type="search" aria-label="Buscar productos" placeholder="Buscar..." value={searchQuery} onChange={e => onSearchChange(e.target.value)} />
-        <button type="submit" aria-label="Buscar"><Search size={20} /></button>
-      </form>
-      <div className="store-header-actions">
-        <a href="#mi-cuenta" aria-label="Mi cuenta" className="store-account"><User size={35} /><span><small>Bienvenido(a)</small><strong>Mi Cuenta</strong></span></a>
-        <button type="button" className="mobile-search-toggle" aria-label={searchOpen ? 'Cerrar búsqueda' : 'Abrir búsqueda'} aria-expanded={searchOpen} onClick={toggleSearch}>{searchOpen ? <X size={25} /> : <Search size={27} />}</button>
-        <button type="button" className="store-cart" onClick={onOpenCart} aria-label={`Abrir carrito, ${cartCount} productos`}><span className="store-cart-icon"><ShoppingCart size={28} /><span className="store-cart-count">{cartCount}</span></span><ChevronDown size={14} /></button>
-      </div>
-    </div>
-    <nav id="store-navigation" className={`store-nav${mobileMenuOpen ? ' is-open' : ''}`} aria-label="Navegación principal">
-      <div className="container store-nav-inner">
-        <div className="store-category-menu">
-          <button type="button" className="store-categories" aria-expanded={categoriesOpen} aria-controls="header-categories" onClick={() => setCategoriesOpen(open => !open)}><Menu size={20} /><span>CATEGORÍAS</span><ChevronDown size={14} /></button>
-          {categoriesOpen && <div id="header-categories" className="store-category-dropdown">{clientData.categories.map(c => <button key={c.slug} onClick={() => { onSelectCategory(c.slug); setCategoriesOpen(false); setMobileMenuOpen(false); }}>{c.name}<span>{c.count}</span></button>)}</div>}
+
+  const handleNavClick = (sectionId, categorySlug = null) => {
+    setMobileMenuOpen(false);
+    if (categorySlug && onSelectCategory) {
+      onSelectCategory(categorySlug);
+    }
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.hash = sectionId;
+    }
+  };
+
+  return (
+    <header className="brand-header">
+      {/* Top Luxury Announcement Bar */}
+      <div className="brand-announcement-bar">
+        <div className="container announcement-content">
+          <span>✨ ENVÍOS A TODO MÉXICO • MERCADO PAGO HASTA 6 MSI & OXXO • HECHO A MANO</span>
+          <div className="topbar-right-links desktop-only">
+            <a href="#faq" onClick={() => handleNavClick('faq')}>Guía de Tallas & FAQ</a>
+            <span>•</span>
+            <a href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
+              WhatsApp: {brand.whatsappFormatted}
+            </a>
+          </div>
         </div>
-        <div className="store-nav-links">
-          <a href="#inicio" onClick={() => setMobileMenuOpen(false)}>Corona de Flores</a>
-          {clientData.categories.filter(c => c.slug !== 'ofrendas-florales').map(c => <a key={c.slug} href="#catalog-section" onClick={() => { onSelectCategory(c.slug); setMobileMenuOpen(false); }}>{c.name}</a>)}
-          <a href="#mi-cuenta" className="mobile-account-link" onClick={() => setMobileMenuOpen(false)}><User size={18} /> Mi cuenta</a>
-        </div>
-        <p className="store-phone">¡Escríbenos! <span>{brand.whatsappFormatted}</span></p>
       </div>
-    </nav>
-  </header>;
+
+      {/* Main Navigation Bar */}
+      <div className="brand-main-header">
+        <div className="container header-grid-row">
+          {/* Mobile Hamburger Button */}
+          <button
+            type="button"
+            className="mobile-nav-toggle"
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
+          {/* Brand Logo & Tagline */}
+          <a href="#inicio" className="brand-logo-link" onClick={() => setMobileMenuOpen(false)}>
+            <img
+              src={brand.logo}
+              alt={brand.name}
+              className="brand-logo-img"
+            />
+            <div className="brand-logo-text-wrapper">
+              <span className="brand-primary-name">{brand.name}</span>
+              <span className="brand-secondary-tagline">{brand.tagline}</span>
+            </div>
+          </a>
+
+          {/* Desktop Navigation Links */}
+          <nav className="desktop-nav-links">
+            <button
+              type="button"
+              className="nav-link-item highlight-customizer"
+              onClick={() => handleNavClick('personaliza-tu-prenda')}
+            >
+              <Sparkles size={15} />
+              <span>Personaliza tu prenda</span>
+            </button>
+            <button
+              type="button"
+              className="nav-link-item"
+              onClick={() => handleNavClick('catalogo-section', 'todos')}
+            >
+              Catálogo
+            </button>
+            <button
+              type="button"
+              className="nav-link-item"
+              onClick={() => handleNavClick('catalogo-section', 'best-sellers')}
+            >
+              Best Sellers
+            </button>
+            <button
+              type="button"
+              className="nav-link-item"
+              onClick={() => handleNavClick('catalogo-section', 'new-in')}
+            >
+              New In
+            </button>
+            <button
+              type="button"
+              className="nav-link-item"
+              onClick={() => handleNavClick('faq')}
+            >
+              FAQ
+            </button>
+          </nav>
+
+          {/* Actions: Search, Wishlist, Cart */}
+          <div className="header-actions-group">
+            {/* Search Toggle / Bar */}
+            <form
+              className={`search-form-bar ${searchOpen ? 'open' : ''}`}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleNavClick('catalogo-section');
+              }}
+            >
+              <input
+                ref={searchInput}
+                type="search"
+                placeholder="Buscar prenda o color..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="search-input"
+              />
+              <button type="button" className="search-icon-btn" onClick={toggleSearch}>
+                {searchOpen ? <X size={18} /> : <Search size={20} />}
+              </button>
+            </form>
+
+            {/* Cart Button */}
+            <button
+              type="button"
+              className="cart-trigger-btn"
+              onClick={onOpenCart}
+              aria-label={`Carrito de compras (${cartCount} productos)`}
+            >
+              <div className="cart-icon-stack">
+                <ShoppingBag size={22} />
+                {cartCount > 0 && (
+                  <span className="cart-badge-count">{cartCount}</span>
+                )}
+              </div>
+              <span className="cart-label-text desktop-only">Bolsa</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Menu */}
+      <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-drawer-content">
+          <button
+            type="button"
+            className="mobile-nav-item primary-custom"
+            onClick={() => handleNavClick('personaliza-tu-prenda')}
+          >
+            <Sparkles size={18} />
+            <span>Personaliza tu prenda en 3D</span>
+          </button>
+
+          <div className="mobile-section-divider">CATEGORÍAS</div>
+          {clientData.categories.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className="mobile-nav-item"
+              onClick={() => handleNavClick('catalogo-section', c.slug)}
+            >
+              <span>{c.name}</span>
+            </button>
+          ))}
+
+          <div className="mobile-section-divider">INFORMACIÓN</div>
+          <button
+            type="button"
+            className="mobile-nav-item"
+            onClick={() => handleNavClick('faq')}
+          >
+            Guía de Tallas & Cuidados
+          </button>
+
+          <div className="mobile-drawer-footer">
+            <a
+              href={`https://wa.me/${brand.whatsapp.replace('+', '')}`}
+              className="mobile-wa-cta"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Pedir Asesoría por WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
 }

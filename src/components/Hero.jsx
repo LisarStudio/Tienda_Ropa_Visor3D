@@ -1,113 +1,102 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, Heart, Truck } from 'lucide-react';
-import { productRepository } from '../services/productRepository';
-import { getAssetUrl } from '../data/clientData';
+import { ArrowRight, Sparkles, Scissors, Heart, ShieldCheck, Play } from 'lucide-react';
+import { clientData, getAssetUrl } from '../data/clientData';
+import './Hero.css';
 
-export function Hero({ onExploreClick }) {
-  const brand = productRepository.getBrandInfo();
-  const heroImage = getAssetUrl('client_images/2021/04/Corona-de-Flores.png');
+export function Hero({ onCustomizeClick, onExploreClick }) {
+  const brand = clientData.brand;
+  const heroPattern = getAssetUrl('assets/patterns/l9.png');
 
   return (
-    <section style={{
-      position: 'relative',
-      padding: '3.5rem 0 3rem 0',
-      background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-      borderBottom: '1px solid #e2e8f0',
-      overflow: 'hidden'
-    }}>
-      <div className="container hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3.5rem', alignItems: 'center' }}>
-        {/* Left Column: Headline & Floristry Value Prop */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }} className="badge badge-gold">
-            <Heart size={14} />
-            <span>FLORISTERÍA FÚNEBRE & CONDOLENCIAS CHILE</span>
+    <section className="atelier-hero-section">
+      {/* Soft Ambient Background Elements */}
+      <div className="hero-ambient-glow" />
+
+      <div className="container hero-grid-wrapper">
+        {/* Left Column: Editorial Headline & Value Proposition */}
+        <div className="hero-text-col">
+          <div className="hero-eyebrow-pill">
+            <Sparkles size={14} className="eyebrow-icon" />
+            <span>HANDMADE • CHIC • FEMININE</span>
           </div>
 
-          <h1 style={{ fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.15, color: '#1b4230', letterSpacing: '-0.03em' }}>
-            Homenaje & Memoria Con <span style={{ color: '#c59b27' }}>Flores Seleccionadas</span>
+          <h1 className="hero-main-title">
+            Prendas de Autor & <span className="title-highlight">Diseño 3D en Vivo</span>
           </h1>
 
-          <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.6 }}>
-            En <strong>{brand.name}</strong> confeccionamos coronas fúnebres solemnes, cubre urnas y arreglos de condolencia con flores naturales de exportación y despacho urgente a velatorios e iglesias.
+          <p className="hero-description-lead">
+            Bienvenida al atelier de <strong>{brand.name}</strong>. Confeccionamos prendas femeninas exclusivas hechas a mano. Explora nuestro catálogo listo para vestir o crea tu propio top strapless personalizado en tiempo real en nuestro visor 3D.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', margin: '0.5rem 0' }}>
-            {[
-              "Despacho prioritario 24/7 a velatorios e iglesias de la Región Metropolitana",
-              "Envío por pedido: $4.000",
-              "Pago 100% seguro con Pasarela Flow (Webpay Plus, Tarjetas de Débito y Crédito)"
-            ].map((text, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#334155', fontSize: '0.92rem', fontWeight: 500 }}>
-                <CheckCircle2 size={18} style={{ color: '#166534', flexShrink: 0 }} />
-                <span>{text}</span>
+          <div className="hero-feature-points">
+            <div className="feature-point-item">
+              <div className="point-icon-box"><Scissors size={18} /></div>
+              <div>
+                <strong>Confección Artesanal a Medida</strong>
+                <span>Tallas estándar XS-XL o ajuste exacto a tus medidas en cm.</span>
               </div>
-            ))}
+            </div>
+            <div className="feature-point-item">
+              <div className="point-icon-box"><Sparkles size={18} /></div>
+              <div>
+                <strong>Simulación 3D con Más de 40 Telas</strong>
+                <span>Prueba cortes, tirantes, bufanda skinny y telas con visualización 360°.</span>
+              </div>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-            <button onClick={onExploreClick} className="btn-primary" style={{ padding: '0.85rem 1.8rem', fontSize: '1rem' }}>
-              <span>Ver Catálogo de Arreglos</span>
-              <ArrowRight size={19} />
-            </button>
-            <a
-              href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola Corona de Flores, necesito una consulta urgente.')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary"
-              style={{ padding: '0.85rem 1.4rem', fontSize: '0.95rem' }}
+          <div className="hero-cta-button-row">
+            <button
+              type="button"
+              className="btn-primary hero-btn-main"
+              onClick={onCustomizeClick}
             >
-              Consulta Urgente 24/7
-            </a>
+              <Sparkles size={18} />
+              <span>Personaliza tu prenda en 3D</span>
+            </button>
+            <button
+              type="button"
+              className="btn-secondary hero-btn-sub"
+              onClick={onExploreClick}
+            >
+              <span>Ver Catálogo</span>
+              <ArrowRight size={18} />
+            </button>
           </div>
         </div>
 
-        {/* Right Column: Floral Hero Visual */}
-        <div style={{ position: 'relative' }}>
-          <div style={{
-            position: 'relative',
-            borderRadius: '20px',
-            overflow: 'hidden',
-            boxShadow: '0 12px 30px rgba(0,0,0,0.08)',
-            border: '1px solid #e2e8f0',
-            background: '#ffffff',
-            padding: '1rem'
-          }}>
-            <img
-              src={heroImage}
-              alt="Corona de Flores"
-              style={{ width: '100%', height: '340px', objectFit: 'contain', borderRadius: '14px', background: '#f8fafc' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-            <div style={{
-              marginTop: '1rem',
-              padding: '1rem',
-              background: '#f1f5f9',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1rem'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Truck style={{ color: '#166534' }} size={24} />
-                <div>
-                  <h4 style={{ color: '#1b4230', fontSize: '0.92rem', fontWeight: 700 }}>Despacho Urgente Velatorios</h4>
-                  <p style={{ color: '#64748b', fontSize: '0.78rem' }}>Coordinación directa con iglesias y parroquias en Santiago</p>
-                </div>
+        {/* Right Column: Hero Visual Showcase */}
+        <div className="hero-visual-col">
+          <div className="hero-visual-card">
+            <div className="hero-card-image-wrapper">
+              <img
+                src={heroPattern}
+                alt="Daniela Atelier Fashion Preview"
+                className="hero-card-img"
+              />
+              <div className="hero-card-badge-3d">
+                <Sparkles size={16} />
+                <span>3D INTERACTIVE STUDIO</span>
               </div>
-              <span className="badge badge-emerald">Flow Webpay</span>
+            </div>
+
+            <div className="hero-card-footer-info">
+              <div className="card-footer-text">
+                <h4>Top Strapless Signature</h4>
+                <p>Fit Pegado o Suelto • Confección a mano</p>
+              </div>
+              <button
+                type="button"
+                className="card-quick-try-btn"
+                onClick={onCustomizeClick}
+              >
+                <span>Probar en 3D</span>
+                <ArrowRight size={15} />
+              </button>
             </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
-        }
-      `}</style>
     </section>
   );
 }

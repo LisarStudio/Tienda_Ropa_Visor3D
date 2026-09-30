@@ -1,542 +1,174 @@
-/* Corona de Flores - Unified Homepage & Catalog Styles */
-
-.home-page {
-  background: #f8f9fa;
-  color: #242424;
-  padding: 24px 0 0;
-  font-family: Arial, sans-serif;
-}
-
-.home-wrap {
-  max-width: 1460px;
-  margin: auto;
-  padding: 0 20px;
-}
-
-.home-page button,
-.home-page select {
-  font-family: inherit;
-}
-
-.home-page button:focus-visible,
-.home-page a:focus-visible,
-.home-page select:focus-visible,
-.home-page summary:focus-visible {
-  outline: 3px solid #b64066;
-  outline-offset: 4px;
-}
-
-.home-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #966d78;
-  margin: 0 0 12px;
-  line-height: 1.8;
-}
-
-/* 1. Welcome Brand Hero Section */
-.home-welcome {
-  background: linear-gradient(180deg, #fffcfd 0%, #fff4f7 100%);
-  border: 1px solid #eedae0;
-  border-radius: 24px;
-  padding: 48px 30px;
-  text-align: center;
-  box-shadow: 0 10px 32px rgba(181, 81, 112, 0.06);
-  margin-bottom: 28px;
-}
-
-.home-welcome-brand {
+.brand-homepage-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 340px;
+  background-color: #ffffff;
 }
 
-.home-brand-emblem-wrap {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+/* Pillars Banner */
+.atelier-pillars-banner {
+  background: #fdfaf6;
+  border-bottom: 1px solid rgba(74, 30, 27, 0.08);
+  padding: 32px 0;
 }
 
-.home-brand-main-logo {
-  max-width: 680px;
-  width: 92%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.06));
-  transition: transform 0.3s ease;
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }
 
-.home-brand-main-logo:hover {
-  transform: scale(1.015);
-}
-
-.home-welcome h1 {
-  font-size: 30px;
-  line-height: 1.35;
-  margin: 8px 0 0;
-  font-weight: 750;
-  letter-spacing: -0.8px;
-  color: #1e293b;
-}
-
-.home-welcome h1 span {
-  font-weight: 600;
-  font-size: 0.92em;
-  margin-left: 12px;
-  color: #555;
-}
-
-/* 2. Interactive Circular Categories Navigation */
-.home-collections {
+.pillar-item {
   display: flex;
   align-items: flex-start;
-  justify-content: center;
-  gap: 24px;
-  padding: 20px 10px 36px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  gap: 14px;
 }
 
-.home-collections > button {
-  flex: 0 0 145px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  scroll-snap-align: center;
-  color: #292929;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  padding: 8px 4px;
-  border-radius: 16px;
-  transition: all 0.25s ease;
-}
-
-.home-collections > button:hover {
-  transform: translateY(-3px);
-}
-
-.home-category-image {
+.pillar-icon-wrap {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  overflow: hidden;
-  background: white;
-  width: 130px;
-  height: 130px;
-  border: 4px solid #fff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  margin-bottom: 12px;
-  transition: all 0.25s ease;
-  position: relative;
-}
-
-.home-category-image img {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  transition: transform 0.35s ease;
-}
-
-.home-collections button:hover img {
-  transform: scale(1.08);
-}
-
-.home-collections strong {
-  font-size: 14px;
-  margin-bottom: 4px;
-  text-align: center;
-}
-
-.home-collections button > span:last-child {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #718096;
-}
-
-/* Active Category Bubble Glow */
-.home-category-bubble.is-active .home-category-image {
-  border-color: #60971f;
-  box-shadow: 0 0 0 4px rgba(96, 151, 31, 0.25), 0 8px 20px rgba(0, 0, 0, 0.12);
-  transform: scale(1.04);
-}
-
-.home-category-bubble.is-active strong {
-  color: #60971f;
-  font-weight: 700;
-}
-
-/* 3. Complete Catalog Section */
-.home-complete-catalog {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 36px 30px;
-  margin-bottom: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-  border: 1px solid #edf2f7;
-}
-
-.catalog-header-bar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #edf2f7;
-  flex-wrap: wrap;
-}
-
-.catalog-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.catalog-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #fdf2f6;
-  color: #b83262;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid #f9d8e5;
-}
-
-.catalog-count-pill {
-  display: inline-block;
-  background: #f0fdf4;
-  color: #166534;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid #dcfce7;
-}
-
-.catalog-header-bar h2 {
-  font-size: 26px;
-  font-weight: 750;
-  margin: 6px 0 6px;
-  color: #0f172a;
-  letter-spacing: -0.5px;
-}
-
-.catalog-subtitle {
-  font-size: 13px;
-  color: #64748b;
-  margin: 0;
-  max-width: 750px;
-  line-height: 1.6;
-}
-
-.catalog-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.catalog-sort-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #475569;
-}
-
-.catalog-sort-box select {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 13px;
-  color: #1e293b;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.catalog-sort-box select:focus {
-  border-color: #b64066;
-  outline: none;
-}
-
-.catalog-view-toggle {
-  display: flex;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.catalog-view-toggle button {
-  background: #ffffff;
-  border: 0;
-  padding: 8px 10px;
-  cursor: pointer;
-  color: #64748b;
+  background: #faf4d4;
+  color: #4a1e1b;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-}
-
-.catalog-view-toggle button.is-active {
-  background: #60971f;
-  color: #ffffff;
-}
-
-/* Products Container Grid */
-.catalog-products-container.view-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 28px 22px;
-}
-
-.catalog-products-container.view-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.catalog-empty-notice {
-  text-align: center;
-  padding: 48px 20px;
-  background: #f8fafc;
-  border-radius: 12px;
-  color: #64748b;
-}
-
-.btn-reset-filters {
-  margin-top: 14px;
-  background: #60971f;
-  color: white;
-  border: 0;
-  padding: 10px 22px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* 4. Features Banner */
-.home-features-banner {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px 28px;
-  margin-bottom: 28px;
-  border: 1px solid #edf2f7;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.feature-icon {
-  color: #60971f;
   flex-shrink: 0;
+  border: 1px solid rgba(74, 30, 27, 0.08);
 }
 
-.feature-item strong {
+.pillar-item strong {
   display: block;
-  font-size: 14px;
-  color: #0f172a;
+  font-size: 0.92rem;
+  color: #4a1e1b;
   margin-bottom: 2px;
 }
 
-.feature-item small {
-  display: block;
-  font-size: 12px;
-  color: #64748b;
-  line-height: 1.4;
-}
-
-/* 5. FAQ Section */
-.home-section {
-  background: #ffffff;
-  padding: 32px 30px;
-  border-radius: 16px;
-  margin-bottom: 28px;
-  border: 1px solid #edf2f7;
-}
-
-.home-faq h2 {
-  font-size: 24px;
-  margin: 0 0 20px;
-  color: #0f172a;
-}
-
-.home-faq details {
-  border-bottom: 1px solid #edf2f7;
-  padding: 16px 0;
-  font-size: 15px;
-}
-
-.home-faq summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.home-faq details p {
-  color: #64748b;
-  line-height: 1.8;
-  padding-top: 12px;
+.pillar-item p {
+  font-size: 0.78rem;
+  color: #7a5956;
+  line-height: 1.45;
   margin: 0;
-  max-width: 900px;
 }
 
-/* 6. Closing CTA Banner */
-.home-closing {
+/* Ready to Wear */
+.ready-to-wear-section {
+  padding: 20px 24px 60px;
+}
+
+/* Atelier Story Section */
+.atelier-story-section {
+  background: radial-gradient(circle at 20% 50%, rgba(250, 244, 212, 0.4) 0%, #ffffff 70%);
+  border-top: 1px solid rgba(74, 30, 27, 0.08);
+  padding: 80px 0;
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+.story-content-col {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  background: linear-gradient(135deg, #2d3e2c 0%, #1a271a 100%);
-  color: white;
-  border-radius: 20px;
-  padding: 32px 36px;
-  margin-bottom: 36px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.home-closing > svg {
-  color: #8ac940;
-  flex-shrink: 0;
+.story-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #a36f6c;
 }
 
-.home-closing > div {
-  flex: 1;
-}
-
-.home-closing h2 {
-  font-size: 22px;
-  margin: 0 0 6px;
-  color: #ffffff;
-}
-
-.home-closing p {
-  font-size: 13px;
-  color: #cbd5e1;
+.story-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #4a1e1b;
   margin: 0;
 }
 
-.home-whatsapp-cta {
-  background: #25d366;
-  color: #ffffff;
+.story-paragraph {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: #5c3835;
+  margin: 0;
+}
+
+.story-brand-badge-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0 14px;
+}
+
+.story-pill {
+  font-size: 0.78rem;
   font-weight: 700;
-  font-size: 13px;
-  padding: 12px 24px;
-  border-radius: 30px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  transition: background 0.2s, transform 0.2s;
+  background: #fdfaf6;
+  border: 1px solid rgba(74, 30, 27, 0.12);
+  color: #4a1e1b;
+  padding: 6px 14px;
+  border-radius: 999px;
 }
 
-.home-whatsapp-cta:hover {
-  background: #20b858;
-  transform: scale(1.03);
+.story-cta {
+  width: fit-content;
 }
 
-/* Responsive Media Queries */
-@media (max-width: 1200px) {
-  .catalog-products-container.view-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Story Visual Mosaic */
+.story-visual-col {
+  position: relative;
+}
+
+.story-image-mosaic {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.mosaic-main-img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(74, 30, 27, 0.12);
+  border: 4px solid #ffffff;
+}
+
+.mosaic-floating-img {
+  position: absolute;
+  bottom: -30px;
+  right: -30px;
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 4px solid #ffffff;
+  box-shadow: 0 15px 35px rgba(74, 30, 27, 0.2);
+}
+
+@media (max-width: 1024px) {
+  .pillars-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-}
-
-@media (max-width: 900px) {
-  .catalog-products-container.view-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px 14px;
-  }
-  .home-features-banner {
+  .story-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 40px;
   }
 }
 
-@media (max-width: 600px) {
-  .home-page {
-    padding-top: 12px;
+@media (max-width: 640px) {
+  .pillars-grid {
+    grid-template-columns: 1fr;
   }
-  .home-wrap {
-    padding: 0 12px;
-  }
-  .home-welcome {
-    padding: 28px 14px;
-    min-height: 240px;
-    margin-bottom: 20px;
-    border-radius: 18px;
-  }
-  .home-brand-main-logo {
-    max-width: 320px;
-    width: 100%;
-  }
-  .home-welcome h1 {
-    font-size: 22px;
-    line-height: 1.3;
-  }
-  .home-welcome h1 span {
-    font-size: 17px;
-    display: block;
-    margin-top: 6px;
-    margin-left: 0;
-  }
-  .home-collections {
-    padding: 10px 0 24px;
-    gap: 16px;
-  }
-  .home-collections > button {
-    flex-basis: 110px;
-  }
-  .home-category-image {
-    width: 95px;
-    height: 95px;
-    margin-bottom: 8px;
-  }
-  .home-collections strong {
-    font-size: 12px;
-  }
-  .home-complete-catalog {
-    padding: 22px 14px;
-    border-radius: 16px;
-  }
-  .catalog-header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  .catalog-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .catalog-products-container.view-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 10px;
-  }
-  .home-closing {
-    flex-direction: column;
-    text-align: center;
-    padding: 28px 20px;
-  }
-  .home-closing > svg {
+  .mosaic-floating-img {
     display: none;
+  }
+  .story-title {
+    font-size: 2rem;
   }
 }

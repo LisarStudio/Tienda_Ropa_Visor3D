@@ -12,7 +12,9 @@ export class FlowService {
     this.apiKey = import.meta.env.VITE_FLOW_API_KEY || '';
     this.backendUrl = import.meta.env.VITE_FLOW_BACKEND_URL || '';
     this.mode = import.meta.env.VITE_FLOW_MODE || 'SANDBOX'; // 'SANDBOX' or 'PRODUCTION'
-    this.flowEndpoint = this.mode === 'PRODUCTION' ? clientData.flowConfig.liveUrl : clientData.flowConfig.sandboxUrl;
+    this.flowEndpoint = this.mode === 'PRODUCTION'
+      ? (clientData.flowConfig?.liveUrl || 'https://www.flow.cl/api')
+      : (clientData.flowConfig?.sandboxUrl || 'https://sandbox.flow.cl/api');
   }
 
   /**

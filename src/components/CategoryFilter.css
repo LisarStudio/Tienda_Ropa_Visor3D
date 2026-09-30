@@ -1,0 +1,85 @@
+.brand-category-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 0 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(74, 30, 27, 0.08);
+}
+
+.category-pills-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.category-pill-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #5c3835;
+  background: #fdfaf6;
+  border: 1px solid rgba(74, 30, 27, 0.12);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-pill-btn:hover {
+  background: #f1b6c7;
+  color: #4a1e1b;
+  border-color: #f1b6c7;
+}
+
+.category-pill-btn.active {
+  background: #4a1e1b;
+  color: #faf4d4;
+  border-color: #4a1e1b;
+  box-shadow: 0 4px 14px rgba(74, 30, 27, 0.15);
+}
+
+.catalog-sort-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.items-counter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8a6562;
+}
+
+.sort-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sort-icon {
+  position: absolute;
+  left: 12px;
+  color: #4a1e1b;
+  pointer-events: none;
+}
+
+.sort-select-input {
+  padding: 8px 16px 8px 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 30, 27, 0.15);
+  background: #ffffff;
+  color: #4a1e1b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.sort-select-input:focus {
+  border-color: #4a1e1b;
+  box-shadow: 0 0 0 3px rgba(74, 30, 27, 0.08);
+}

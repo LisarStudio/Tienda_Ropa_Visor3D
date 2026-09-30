@@ -1,11 +1,21 @@
-﻿import React from 'react';
+import React from 'react';
 import { MessageCircle } from 'lucide-react';
-import { productRepository } from '../services/productRepository';
+import { clientData } from '../data/clientData';
 import './WhatsAppWidget.css';
 
 export function WhatsAppWidget() {
-  const brand = productRepository.getBrandInfo();
-  return <a href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola Corona de Flores, necesito ayuda con mi pedido de flores fúnebres.')}`} target="_blank" rel="noopener noreferrer" className="whatsapp-widget" aria-label="¿Necesitas Ayuda?" title="¿Necesitas Ayuda?">
-    <span className="whatsapp-widget-icon"><MessageCircle size={25} /></span><span className="whatsapp-widget-label">¿Necesitas Ayuda?</span>
-  </a>;
+  const brand = clientData.brand;
+  return (
+    <a
+      href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola Daniela Atelier, me gustaría consultar por una prenda a medida.')}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="whatsapp-widget"
+      aria-label="¿Necesitas Asesoría en Tallas?"
+      title="¿Necesitas Asesoría en Tallas?"
+    >
+      <span className="whatsapp-widget-icon"><MessageCircle size={24} /></span>
+      <span className="whatsapp-widget-label">¿Asesoría en Tallas?</span>
+    </a>
+  );
 }

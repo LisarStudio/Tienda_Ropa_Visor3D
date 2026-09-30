@@ -1,272 +1,206 @@
 import React, { useState } from 'react';
-import { X, Star, CheckCircle, ShieldCheck, ShoppingCart, CreditCard } from 'lucide-react';
-import { getAssetUrl } from '../data/clientData';
+import { X, Sparkles, Check, ShoppingBag, ShieldCheck, Ruler, ArrowRight } from 'lucide-react';
+import './ProductDetailModal.css';
 
-export function ProductDetailModal({ product, onClose, onAddToCart, onBuyNowFlow }) {
-  const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0] || null);
-  const [selectedImage, setSelectedImage] = useState(product?.image || '');
+import { formatPrice } from '../utils/currency';
+
+export function ProductDetailModal({ product, onClose, onAddToCart, onBuyNowFlow, onCustomizeClick }) {
+  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'S');
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(product?.image || '');
 
   if (!product) return null;
 
-  const formatCLP = (amount) => {
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(amount);
-  };
-
-  const currentPrice = product.price + (selectedVariant ? selectedVariant.priceModifier : 0);
+  const isCustom = product.is3DCustomizable;
 
   const handleAddToCart = () => {
-    onAddToCart(product, quantity, selectedVariant);
+    onAddToCart(product, quantity, { name: `Talla ${selectedSize}`, size: selectedSize });
   };
 
   const handleBuyNow = () => {
-    onBuyNowFlow(product, quantity, selectedVariant);
+    onBuyNowFlow(product, quantity, { name: `Talla ${selectedSize}`, size: selectedSize });
   };
 
-  const fallbackImg = getAssetUrl('client_images/2021/04/Corona-de-Flores.png');
+  const handleGoToCustomizer = () => {
+    onClose();
+    if (onCustomizeClick) {
+      onCustomizeClick(product);
+    } else {
+      const el = document.getElementById('personaliza-tu-prenda');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="fade-in"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#ffffff',
-          borderRadius: 'var(--radius-xl)',
-          border: '1px solid #e2e8f0',
-          maxWidth: '850px',
-          width: '100%',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          position: 'relative',
-          padding: '2rem',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '2rem',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.15)'
-        }}
-        id="product-detail-modal"
-      >
-        {/* Close Button */}
+    <div className="fashion-modal-overlay" onClick={onClose}>
+      <div className="fashion-modal-card" onClick={(e) => e.stopPropagation()}>
         <button
-          aria-label="Cerrar producto"
+          type="button"
+          aria-label="Cerrar modal"
+          className="modal-close-icon-btn"
           onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '1.25rem',
-            right: '1.25rem',
-            color: '#64748b',
-            background: '#f1f5f9',
-            borderRadius: '9999px',
-            padding: '0.4rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid #e2e8f0'
-          }}
         >
           <X size={20} />
         </button>
 
-        {/* Left Column: Image Gallery */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{
-            width: '100%',
-            height: '350px',
-            borderRadius: 'var(--radius-lg)',
-            overflow: 'hidden',
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0.5rem'
-          }}>
-            <img
-              src={selectedImage}
-              alt={product.title}
-              style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto', objectFit: 'contain' }}
-              onError={(e) => {
-                e.target.src = fallbackImg;
-              }}
-            />
+        <div className="fashion-modal-grid">
+          {/* Left Column: Image & Gallery */}
+          <div className="modal-gallery-col">
+            <div className="modal-main-image-box">
+              <img
+                src={selectedImage || product.image}
+                alt={product.name}
+                className="modal-main-img"
+              />
+              {isCustom && (
+                <div className="modal-3d-floating-badge">
+                  <Sparkles size={14} />
+                  <span>Modelo Personalizable 3D</span>
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnails */}
+            {product.gallery && product.gallery.length > 1 && (
+              <div className="modal-thumbnails-row">
+                {[product.image, ...product.gallery.filter(g => g !== product.image)].map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`thumb-btn ${selectedImage === img ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(img)}
+                  >
+                    <img src={img} alt={`Vista ${idx + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Atelier Guarantee */}
+            <div className="modal-atelier-guarantee">
+              <ShieldCheck size={20} className="guarantee-icon" />
+              <div>
+                <strong>Confección 100% Mexicana de Autor</strong>
+                <span>Terminaciones de alta costura, forro suave y telas de primera calidad.</span>
+              </div>
+            </div>
           </div>
 
-          {/* Thumbnails */}
-          {product.gallery && product.gallery.length > 0 && (
-            <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px' }}>
-              {[product.image, ...product.gallery].map((img, idx) => (
+          {/* Right Column: Details & Customizer Actions */}
+          <div className="modal-info-col">
+            <div className="modal-category-badge">{product.category}</div>
+            <h2 className="modal-product-title">{product.name}</h2>
+
+            <div className="modal-price-row">
+              <span className="modal-current-price">{formatPrice(product.price * quantity)}</span>
+              {product.originalPrice && (
+                <span className="modal-original-price">{formatPrice(product.originalPrice * quantity)}</span>
+              )}
+            </div>
+
+            <p className="modal-description-text">{product.description}</p>
+
+            {/* 3D Customizer Highlight Box */}
+            {isCustom && (
+              <div className="modal-customizer-cta-box">
+                <div className="cta-box-text">
+                  <div className="cta-box-title">
+                    <Sparkles size={16} />
+                    <span>¿Quieres elegir otro color, largo o tirantes?</span>
+                  </div>
+                  <p>Prueba este modelo con nuestro visor 3D interactivo y más de 40 telas.</p>
+                </div>
                 <button
-                  key={idx}
                   type="button"
-                  onClick={() => setSelectedImage(img)}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    padding: '2px',
-                    borderRadius: '8px',
-                    background: '#ffffff',
-                    cursor: 'pointer',
-                    border: selectedImage === img ? '2px solid #1b4230' : '1px solid #e2e8f0',
-                    opacity: selectedImage === img ? 1 : 0.7,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}
+                  className="open-3d-btn"
+                  onClick={handleGoToCustomizer}
                 >
-                  <img
-                    src={img}
-                    alt={`Thumbnail ${idx}`}
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      objectFit: 'contain'
-                    }}
-                  />
+                  <span>Abrir Taller 3D</span>
+                  <ArrowRight size={15} />
                 </button>
-              ))}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Guarantee Box */}
-          <div style={{
-            background: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-            borderRadius: 'var(--radius-md)',
-            padding: '0.85rem 1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem'
-          }}>
-            <ShieldCheck size={24} style={{ color: '#166534', flexShrink: 0 }} />
-            <div>
-              <h5 style={{ fontSize: '0.85rem', color: '#14532d', fontWeight: 700 }}>Despacho Garantizado a Velatorio</h5>
-              <p style={{ fontSize: '0.78rem', color: '#334155' }}>Pago encriptado con Flow (Webpay Plus) en CLP.</p>
-            </div>
-          </div>
-        </div>
+            {/* Sizes */}
+            {product.sizes && (
+              <div className="modal-sizes-group">
+                <div className="sizes-header">
+                  <span className="sizes-label">Seleccionar Talla:</span>
+                  <a href="#faq" onClick={() => { onClose(); const el = document.getElementById('faq'); if (el) el.scrollIntoView(); }} className="size-guide-link">
+                    <Ruler size={13} /> Guía de medidas
+                  </a>
+                </div>
 
-        {/* Right Column: Details & Order Controls */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-              <span className="badge badge-emerald">{product.category}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <Star size={15} style={{ color: '#d97706', fill: '#d97706' }} />
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>{product.rating}</span>
-                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>({product.reviewsCount} evaluaciones)</span>
+                <div className="modal-sizes-pills">
+                  {product.sizes.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`size-pill ${selectedSize === s ? 'active' : ''}`}
+                      onClick={() => setSelectedSize(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quantity */}
+            <div className="modal-qty-group">
+              <span className="qty-label">Cantidad:</span>
+              <div className="qty-stepper">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="stepper-btn"
+                >
+                  -
+                </button>
+                <span className="stepper-val">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="stepper-btn"
+                >
+                  +
+                </button>
               </div>
             </div>
 
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.25 }}>{product.title}</h2>
-            <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>CÓDIGO: {product.sku}</p>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
-            <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1b4230' }}>
-              {formatCLP(currentPrice * quantity)}
-            </span>
-            {product.regularPrice > product.price && (
-              <span style={{ fontSize: '1rem', color: '#94a3b8', textDecoration: 'line-through' }}>
-                {formatCLP(product.regularPrice * quantity)}
-              </span>
-            )}
-          </div>
-
-          <p style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.5 }}>
-            {product.description || product.shortDescription}
-          </p>
-
-          <p className="product-shipping" style={{ fontSize: '0.85rem', color: '#475569' }}>Envío: $4.000 por pedido.</p>
-
-          {/* Variants Selection */}
-          {product.variants && product.variants.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1b4230', textTransform: 'uppercase' }}>
-                {product.variantLabel || 'Tamaño / Dimensión:'}
-              </label>
-              <select
-                value={selectedVariant ? selectedVariant.name : ''}
-                onChange={(e) => {
-                  const v = product.variants.find(item => item.name === e.target.value);
-                  setSelectedVariant(v);
-                }}
-                className="input-field"
-                style={{ fontSize: '0.88rem' }}
-              >
-                {product.variants.map((variant, idx) => (
-                  <option key={idx} value={variant.name}>
-                    {variant.name} {variant.priceModifier > 0 ? `(+${formatCLP(variant.priceModifier)})` : ''}
-                  </option>
+            {/* Features list */}
+            {product.features && (
+              <div className="modal-features-list">
+                {product.features.map((feat, idx) => (
+                  <div key={idx} className="feature-row">
+                    <Check size={14} className="feat-check-icon" />
+                    <span>{feat}</span>
+                  </div>
                 ))}
-              </select>
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Quantity Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>
-              Cantidad:
-            </span>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              background: '#f8fafc',
-              border: '1px solid #cbd5e1',
-              borderRadius: 'var(--radius-md)',
-              overflow: 'hidden'
-            }}>
+            {/* Action Buttons */}
+            <div className="modal-action-buttons">
               <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                style={{ padding: '0.4rem 0.8rem', color: '#0f172a', fontSize: '1.1rem', fontWeight: 700 }}
+                type="button"
+                className="modal-add-cart-btn"
+                onClick={handleAddToCart}
               >
-                -
+                <ShoppingBag size={18} />
+                <span>Añadir a mi Carrito</span>
               </button>
-              <span style={{ padding: '0.4rem 1rem', fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
-                {quantity}
-              </span>
               <button
-                onClick={() => setQuantity(quantity + 1)}
-                style={{ padding: '0.4rem 0.8rem', color: '#0f172a', fontSize: '1.1rem', fontWeight: 700 }}
+                type="button"
+                className="modal-buy-now-btn"
+                onClick={handleBuyNow}
               >
-                +
+                <span>Comprar Ahora</span>
               </button>
             </div>
-          </div>
-
-          {/* Features Checklist */}
-          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem' }}>El arreglo incluye:</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              {product.features.map((feat, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#334155' }}>
-                  <CheckCircle size={15} style={{ color: '#166534', flexShrink: 0 }} />
-                  <span>{feat}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Action CTAs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <button onClick={handleAddToCart} className="btn-primary" style={{ padding: '0.85rem', fontSize: '0.95rem' }}>
-              <ShoppingCart size={18} />
-              <span>Agregar al Carrito</span>
-            </button>
-            <button onClick={handleBuyNow} className="btn-gold" style={{ padding: '0.85rem', fontSize: '0.95rem' }}>
-              <CreditCard size={18} />
-              <span>Pagar Directo con Flow (Webpay)</span>
-            </button>
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          #product-detail-modal { grid-template-columns: 1fr !important; padding: 1.25rem !important; }
-        }
-      `}</style>
     </div>
   );
 }

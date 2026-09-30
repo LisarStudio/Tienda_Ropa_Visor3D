@@ -1,0 +1,60 @@
+.fashion-catalog-section {
+  padding: 40px 0 80px;
+}
+
+.catalog-header-intro {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 36px;
+}
+
+.catalog-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a36f6c;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.catalog-heading {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #4a1e1b;
+  margin: 0 0 10px;
+}
+
+.catalog-subtext {
+  font-size: 0.98rem;
+  color: #6e4c49;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.fashion-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+.catalog-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px dashed rgba(74, 30, 27, 0.2);
+  color: #7a5956;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .fashion-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .catalog-heading {
+    font-size: 1.75rem;
+  }
+}

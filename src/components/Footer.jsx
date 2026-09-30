@@ -1,88 +1,83 @@
 import React from 'react';
-import { productRepository } from '../services/productRepository';
 import { clientData } from '../data/clientData';
+import { Mail, Phone, MapPin, Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import './Footer.css';
-import { Mail, Phone, MapPin, ShieldCheck, Flower2 } from 'lucide-react';
 
 export function Footer({ onSelectCategory }) {
-  const brand = productRepository.getBrandInfo();
+  const brand = clientData.brand;
 
   return (
-    <footer className="store-footer">
-      <div className="container footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.2fr', gap: '3rem', marginBottom: '3rem' }}>
-        {/* Brand & Slogan */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <Flower2 size={26} style={{ color: '#6ea820' }} />
-              <span style={{ fontSize: '1.45rem', fontWeight: 800, fontFamily: 'Georgia, serif', color: '#ffffff', letterSpacing: '-0.3px' }}>
-                Corona de <span style={{ color: '#c59b27' }}>Flores</span>
-              </span>
-            </div>
-            <span style={{ fontSize: '0.72rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: 600, paddingLeft: '32px' }}>
-              Floristería Fúnebre Chile
-            </span>
+    <footer className="brand-footer">
+      <div className="container footer-main-grid">
+        {/* Brand Col */}
+        <div className="footer-brand-col">
+          <div className="footer-logo-box">
+            <img
+              src={brand.logoLight || brand.logo}
+              alt={brand.name}
+              className="footer-logo-img"
+            />
+            <span className="footer-tagline-text">{brand.tagline}</span>
           </div>
 
-          <p style={{ lineHeight: 1.6, maxWidth: '400px', color: '#94a3b8' }}>
-            Floristería especializada en la elaboración y despacho urgente de coronas fúnebres, ramilletes de condolencias y cubre urnas en la Región Metropolitana.
+          <p className="footer-about-text">
+            Atelier de moda de autor especializado en prendas hechas a mano con dedicación artesanal y personalización interactiva en 3D en tiempo real.
           </p>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399', fontWeight: 600, fontSize: '0.82rem' }}>
-            <ShieldCheck size={18} />
-            <span>Pasarela de pagos integrados Flow (Webpay Plus, Tarjetas Débito y Crédito)</span>
+          <div className="footer-trust-badge">
+            <Sparkles size={16} />
+            <span>Taller de confección en Ciudad de México • Envíos a todo México</span>
           </div>
         </div>
 
-        {/* Fast Links */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.25rem' }}>Categorías de Floristería</h4>
-          {clientData.categories.map(c => <a key={c.slug} href="#catalog-section" onClick={() => onSelectCategory(c.slug)}>{c.name}</a>)}
+        {/* Links Col */}
+        <div className="footer-links-col">
+          <h4>Colecciones Atelier</h4>
+          <a href="#personaliza-tu-prenda" onClick={() => { const el = document.getElementById('personaliza-tu-prenda'); if (el) el.scrollIntoView(); }}>
+            Personaliza tu prenda 3D
+          </a>
+          {clientData.categories.map((c) => (
+            <a
+              key={c.id}
+              href="#catalogo-section"
+              onClick={() => onSelectCategory && onSelectCategory(c.slug)}
+            >
+              {c.name}
+            </a>
+          ))}
         </div>
 
-        {/* Contact Info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.25rem' }}>Atención Urgente 24/7</h4>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Phone size={16} style={{ color: '#c59b27' }} />
-            <span>{brand.whatsappFormatted}</span>
+        {/* Contact & Hours */}
+        <div className="footer-contact-col">
+          <h4>Atención & Asesoría</h4>
+          <div className="contact-item">
+            <Phone size={16} className="contact-icon" />
+            <a href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
+              WhatsApp: {brand.whatsappFormatted}
+            </a>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Mail size={16} style={{ color: '#c59b27' }} />
-            <span>{brand.email}</span>
+          <div className="contact-item">
+            <Mail size={16} className="contact-icon" />
+            <a href={`mailto:${brand.email}`}>
+              {brand.email}
+            </a>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <MapPin size={16} style={{ color: '#c59b27' }} />
+          <div className="contact-item">
+            <MapPin size={16} className="contact-icon" />
             <span>{brand.address}</span>
           </div>
         </div>
       </div>
 
       {/* Sub Footer */}
-      <div className="container" style={{
-        paddingTop: '2rem',
-        borderTop: '1px solid rgba(255,255,255,0.1)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        fontSize: '0.78rem'
-      }}>
+      <div className="container sub-footer-row">
         <div>
-          © {new Date().getFullYear()} {brand.name} (coronadeflores.cl). Todos los derechos reservados.
+          © {new Date().getFullYear()} {brand.name} Atelier. Todos los derechos reservados.
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.06)', padding: '0.3rem 0.75rem', borderRadius: '9999px' }}>
-          <span style={{ color: '#fbbf24', fontWeight: 700 }}>DEMO NOINDEX</span>
-          <span>• Desarrollado por Lisar Studio</span>
+        <div className="sub-footer-credits">
+          <span>Handmade with</span> <Heart size={14} className="heart-icon" /> <span>• Con tecnología 3D por Lisar Studio</span>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .footer-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
-        }
-      `}</style>
     </footer>
   );
 }

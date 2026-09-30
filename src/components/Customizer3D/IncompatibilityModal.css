@@ -1,0 +1,138 @@
+.incompatibility-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 18, 16, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+.incompatibility-modal-card {
+  position: relative;
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 24px;
+  padding: 32px 28px 28px;
+  box-shadow: 0 25px 50px -12px rgba(74, 30, 27, 0.25);
+  border: 1px solid rgba(74, 30, 27, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.incompatibility-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #fdf8f5;
+  color: #7a5956;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.incompatibility-close-btn:hover {
+  background: #f1b6c7;
+  color: #4a1e1b;
+}
+
+.incompatibility-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #faf4d4;
+  color: #78350f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 16px rgba(120, 53, 15, 0.12);
+}
+
+.incompatibility-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #4a1e1b;
+  margin: 0 0 12px;
+}
+
+.incompatibility-message {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #5c3835;
+  margin: 0 0 28px;
+}
+
+.incompatibility-message strong {
+  color: #4a1e1b;
+}
+
+.incompatibility-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.incompatibility-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.incompatibility-btn.primary {
+  background: #4a1e1b;
+  color: #faf4d4;
+  border: none;
+  box-shadow: 0 4px 14px rgba(74, 30, 27, 0.2);
+}
+
+.incompatibility-btn.primary:hover {
+  background: #321311;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 30, 27, 0.28);
+}
+
+.incompatibility-btn.secondary {
+  background: #fbf8f5;
+  color: #4a1e1b;
+  border: 1px solid rgba(74, 30, 27, 0.15);
+}
+
+.incompatibility-btn.secondary:hover {
+  background: #f1b6c7;
+  border-color: #f1b6c7;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}

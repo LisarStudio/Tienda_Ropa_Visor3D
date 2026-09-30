@@ -1,278 +1,176 @@
-import React, { useState, useMemo } from 'react';
-import { Flower2, LayoutGrid, List, Sparkles, Clock, ShieldCheck, Heart } from 'lucide-react';
-import { clientData } from '../data/clientData';
-import { productRepository } from '../services/productRepository';
-import { ProductCard } from './ProductCard';
+import React, { useMemo } from 'react';
+import { Hero } from './Hero';
+import { CustomizerSection } from './Customizer3D/CustomizerSection';
+import { CategoryFilter } from './CategoryFilter';
+import { ProductGrid } from './ProductGrid';
+import { FAQSection } from './FAQSection';
+import { clientData, getAssetUrl } from '../data/clientData';
+import { Sparkles, Scissors, Heart, ShieldCheck, Truck, ArrowRight } from 'lucide-react';
 import './HomePage.css';
-
-const allProducts = clientData.products;
-
-const categoryCollections = [
-  { slug: 'funebres', name: 'Catálogo completo', count: allProducts.length, image: allProducts[0]?.image },
-  { slug: 'coronas', name: 'Coronas', count: allProducts.filter(p => p.originalCategorySlugs.includes('coronas')).length, id: 'legacy-1326' },
-  { slug: 'arreglos', name: 'Arreglos', count: allProducts.filter(p => p.originalCategorySlugs.includes('arreglos')).length, id: 'legacy-797' },
-  { slug: 'ofrendas-florales', name: 'Ofrendas florales', count: allProducts.filter(p => p.originalCategorySlugs.includes('ofrendas-florales')).length, id: 'legacy-878' },
-  { slug: 'cubre-urnas', name: 'Cubre urnas', count: allProducts.filter(p => p.originalCategorySlugs.includes('cubre-urnas')).length, id: 'legacy-800' },
-  { slug: 'ramos', name: 'Ramos', count: allProducts.filter(p => p.originalCategorySlugs.includes('ramos')).length, id: 'legacy-881' },
-].map(c => ({
-  ...c,
-  image: c.image || allProducts.find(p => p.id === c.id)?.image || allProducts[0].image
-}));
 
 export function HomePage({
   onSelectProduct,
-  activeCategory: externalCategory,
-  onSelectCategory: externalSelectCategory,
+  activeCategory = 'todos',
+  onSelectCategory,
   searchQuery = '',
-  sortBy: externalSortBy,
-  onSortChange: externalSortChange,
-  catalogView: externalView,
-  onViewChange: externalViewChange
+  sortBy = 'featured',
+  onSortChange,
+  onAddToCart
 }) {
-  const brand = productRepository.getBrandInfo();
-  const [internalCategory, setInternalCategory] = useState('funebres');
-  const [internalSortBy, setInternalSortBy] = useState('featured');
-  const [internalView, setInternalView] = useState('grid');
+  const brand = clientData.brand;
+  const allProducts = clientData.products;
 
-  const activeCategory = externalCategory !== undefined ? externalCategory : internalCategory;
-  const sortBy = externalSortBy !== undefined ? externalSortBy : internalSortBy;
-  const view = externalView !== undefined ? externalView : internalView;
-
-  const handleCategoryChange = (slug) => {
-    if (externalSelectCategory) {
-      externalSelectCategory(slug);
-    } else {
-      setInternalCategory(slug);
-    }
-  };
-
-  const handleSortChange = (val) => {
-    if (externalSortChange) {
-      externalSortChange(val);
-    } else {
-      setInternalSortBy(val);
-    }
-  };
-
-  const handleViewChange = (v) => {
-    if (externalViewChange) {
-      externalViewChange(v);
-    } else {
-      setInternalView(v);
-    }
-  };
-
-  // Filtrar y ordenar productos para mostrar todos los correspondientes
+  // Filter and Sort Catalog Products
   const displayedProducts = useMemo(() => {
     let list = [...allProducts];
 
-    // Filtrar por categoría
-    if (activeCategory && activeCategory !== 'funebres') {
-      list = list.filter(p => p.originalCategorySlugs.includes(activeCategory));
-    }
-
-    // Filtrar por búsqueda si existe
-    if (searchQuery && searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
+    // Category filter
+    if (activeCategory && activeCategory !== 'todos' && activeCategory !== 'all') {
       list = list.filter(p =>
-        p.title.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q) ||
-        p.sku?.toLowerCase().includes(q)
+        p.category === activeCategory ||
+        p.categorySlugs?.includes(activeCategory)
       );
     }
 
-    // Ordenar
+    // Search filter
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      );
+    }
+
+    // Sort
     if (sortBy === 'price-low') {
       list.sort((a, b) => a.price - b.price);
     } else if (sortBy === 'price-high') {
       list.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'title') {
-      list.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === 'name') {
+      list.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return list;
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [allProducts, activeCategory, searchQuery, sortBy]);
 
-  const activeCategoryObj = categoryCollections.find(c => c.slug === activeCategory) || categoryCollections[0];
+  const scrollToCustomizer = () => {
+    const el = document.getElementById('personaliza-tu-prenda');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToCatalog = () => {
+    const el = document.getElementById('catalogo-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <main className="home-page" id="inicio">
-      <div className="home-wrap">
-        {/* 1. Banner de bienvenida con Logo Oficial Centrado y Grande */}
-        <section className="home-welcome home-welcome-brand">
-          <div className="home-brand-emblem-wrap">
-            <img
-              src={brand.logo}
-              alt={brand.name}
-              className="home-brand-main-logo"
-              width="680"
-              height="245"
-            />
-          </div>
-          <p className="home-eyebrow">FLORES QUE EXPRESAN CARIÑO, RESPETO Y COMPAÑÍA</p>
-          <h1>Floristería en Santiago <span>Un homenaje hecho con flores</span></h1>
-        </section>
+    <main className="brand-homepage-container" id="inicio">
+      {/* 1. Hero Section */}
+      <Hero
+        onCustomizeClick={scrollToCustomizer}
+        onExploreClick={scrollToCatalog}
+      />
 
-        {/* 2. Barra de Categorías Circulares Interactivas */}
-        <nav className="home-collections" aria-label="Colecciones de flores">
-          {categoryCollections.map(c => {
-            const isSelected = activeCategory === c.slug;
-            return (
-              <button
-                key={c.slug}
-                type="button"
-                className={`home-category-bubble${isSelected ? ' is-active' : ''}`}
-                onClick={() => handleCategoryChange(c.slug)}
-                aria-pressed={isSelected}
-              >
-                <span className="home-category-image">
-                  <img src={c.image} alt={c.name} width="150" height="150" loading="lazy" />
-                </span>
-                <strong>{c.name}</strong>
-                <span>{c.count} productos</span>
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* 3. Catálogo Completo Fusionado en Portada (TODOS los productos disponibles directamente) */}
-        <section className="home-section home-complete-catalog" id="catalog-section" aria-labelledby="catalog-title">
-          <div className="catalog-header-bar">
+      {/* 2. Value Proposition Pillars */}
+      <section className="atelier-pillars-banner">
+        <div className="container pillars-grid">
+          <div className="pillar-item">
+            <div className="pillar-icon-wrap"><Scissors size={22} /></div>
             <div>
-              <div className="catalog-badge-row">
-                <span className="catalog-pill">
-                  <Sparkles size={14} /> {activeCategoryObj.name}
-                </span>
-                <span className="catalog-count-pill">
-                  {displayedProducts.length} productos disponibles
-                </span>
-              </div>
-              <h2 id="catalog-title">
-                {activeCategory === 'funebres' ? 'Catálogo Completo de Arreglos y Coronas Fúnebres' : activeCategoryObj.name}
-              </h2>
-              <p className="catalog-subtitle">
-                Despacho express 24/7 a todos los velatorios, iglesias y domicilios de Santiago. Cinta o tarjeta de condolencia incluida.
-              </p>
-            </div>
-
-            {/* Controles de ordenamiento y vista */}
-            <div className="catalog-controls">
-              <div className="catalog-sort-box">
-                <label htmlFor="home-sort">Ordenar:</label>
-                <select
-                  id="home-sort"
-                  value={sortBy}
-                  onChange={e => handleSortChange(e.target.value)}
-                >
-                  <option value="featured">Destacados</option>
-                  <option value="price-low">Precio: Menor a Mayor</option>
-                  <option value="price-high">Precio: Mayor a Menor</option>
-                  <option value="title">Nombre A-Z</option>
-                </select>
-              </div>
-
-              <div className="catalog-view-toggle">
-                <button
-                  type="button"
-                  aria-label="Ver en cuadrícula"
-                  className={view === 'grid' ? 'is-active' : ''}
-                  onClick={() => handleViewChange('grid')}
-                >
-                  <LayoutGrid size={18} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Ver en lista"
-                  className={view === 'list' ? 'is-active' : ''}
-                  onClick={() => handleViewChange('list')}
-                >
-                  <List size={18} />
-                </button>
-              </div>
+              <strong>Confección 100% a Mano</strong>
+              <p>Cada pieza es cortada y confeccionada artesanalmente en nuestro taller.</p>
             </div>
           </div>
-
-          {/* Cuadrícula con TODOS los productos */}
-          {displayedProducts.length > 0 ? (
-            <div className={`catalog-products-container view-${view}`}>
-              {displayedProducts.map((p, index) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  onSelectProduct={onSelectProduct}
-                  priority={index < 4}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="catalog-empty-notice">
-              <p>No se encontraron productos en esta categoría o con la búsqueda actual.</p>
-              <button
-                type="button"
-                className="btn-reset-filters"
-                onClick={() => handleCategoryChange('funebres')}
-              >
-                Ver todo el catálogo
-              </button>
-            </div>
-          )}
-        </section>
-
-        {/* 4. Ventajas del Servicio */}
-        <section className="home-features-banner">
-          <div className="feature-item">
-            <Clock size={28} className="feature-icon" />
+          <div className="pillar-item">
+            <div className="pillar-icon-wrap"><Sparkles size={22} /></div>
             <div>
-              <strong>Despacho Express 24/7</strong>
-              <small>Entrega puntual en cualquier funeraria o velatorio de Santiago</small>
+              <strong>Diseño 3D en Tiempo Real</strong>
+              <p>Visualiza combinaciones de cortes, tirantes y más de 40 telas en 360°.</p>
             </div>
           </div>
-          <div className="feature-item">
-            <Heart size={28} className="feature-icon" />
+          <div className="pillar-item">
+            <div className="pillar-icon-wrap"><Heart size={22} /></div>
             <div>
-              <strong>Cinta o Tarjeta Incluida</strong>
-              <small>Mensaje de condolencias personalizado sin costo adicional</small>
+              <strong>Tallas Estándar & A Medida</strong>
+              <p>Desde XS a XL o ajustada a tus centímetros de busto y cintura.</p>
             </div>
           </div>
-          <div className="feature-item">
-            <ShieldCheck size={28} className="feature-icon" />
+          <div className="pillar-item">
+            <div className="pillar-icon-wrap"><Truck size={22} /></div>
             <div>
-              <strong>Pago Seguro Flow / Webpay</strong>
-              <small>Tarjetas de débito, crédito y transferencia bancaria</small>
+              <strong>Envíos a Todo el País</strong>
+              <p>Despacho seguro y seguimiento personalizado de tu pedido.</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* 5. Preguntas Frecuentes */}
-        <section className="home-faq home-section">
-          <p className="home-eyebrow">INFORMACIÓN DE COMPRA Y SERVICIO</p>
-          <h2>Preguntas frecuentes</h2>
-          <details open>
-            <summary>¿En cuánto tiempo se realiza la entrega?</summary>
-            <p>Confeccionamos y despachamos en un plazo promedio de 2 a 4 horas a funerarias, iglesias y velatorios en todo Santiago (Sendero, Parque del Recuerdo, Cementerio General, San Sebastián, etc.).</p>
-          </details>
-          <details>
-            <summary>¿Cómo añado el mensaje de la tarjeta o cinta?</summary>
-            <p>Al hacer clic en "Comprar ahora" o al ir al Carrito, completarás un formulario de 3 preguntas clave: (1) ¿A quién entrega?, (2) Dirección o Velatorio, y (3) Texto de la tarjeta/cinta.</p>
-          </details>
-          <details>
-            <summary>¿Qué medios de pago aceptan?</summary>
-            <p>Aceptamos Webpay Plus, tarjetas de crédito, débito Redcompra y transferencias electrónicas a través de la pasarela segura Flow.cl.</p>
-          </details>
-        </section>
+      {/* 3. The 3D Customizer Interactive Studio (Star Feature) */}
+      <CustomizerSection onAddToCart={onAddToCart} />
 
-        {/* 6. Pie de Cierre */}
-        <section className="home-closing">
-          <Flower2 size={36} />
-          <div>
-            <h2>Corona de Flores Santiago</h2>
-            <p>Floristería especializada en coronas fúnebres, arreglos y condolencias 24/7.</p>
+      {/* 4. Ready-to-Wear Catalog */}
+      <section className="container ready-to-wear-section">
+        <CategoryFilter
+          categories={clientData.categories}
+          activeCategory={activeCategory}
+          onSelectCategory={onSelectCategory}
+          sortBy={sortBy}
+          onSortChange={onSortChange}
+          totalItems={displayedProducts.length}
+        />
+
+        <ProductGrid
+          products={displayedProducts}
+          category={activeCategory}
+          onSelectProduct={onSelectProduct}
+          onCustomizeClick={scrollToCustomizer}
+        />
+      </section>
+
+      {/* 5. Brand Identity & Atelier Spotlight */}
+      <section className="atelier-story-section">
+        <div className="container story-grid">
+          <div className="story-content-col">
+            <span className="story-eyebrow">LA FILOSOFÍA DEL ATELIER</span>
+            <h2 className="story-title">Handmade • Chic • Feminine</h2>
+            <p className="story-paragraph">
+              En <strong>Daniela Atelier</strong> creemos en una moda femenina consciente, donde la tecnología 3D se une con la alta costura tradicional. Cada top, vestido o falda se diseña pensando en realzar la belleza y seguridad de cada mujer con telas exclusivas y calces perfectos.
+            </p>
+            <div className="story-brand-badge-row">
+              <span className="story-pill">Taller en Chile</span>
+              <span className="story-pill">Textiles de Alta Calidad</span>
+              <span className="story-pill">Atención Personalizada</span>
+            </div>
+            <button
+              type="button"
+              className="btn-primary story-cta"
+              onClick={scrollToCustomizer}
+            >
+              <Sparkles size={16} />
+              <span>Crear mi propio diseño</span>
+            </button>
           </div>
-          <a href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="home-whatsapp-cta">
-            WhatsApp {brand.whatsappFormatted}
-          </a>
-        </section>
-      </div>
+
+          <div className="story-visual-col">
+            <div className="story-image-mosaic">
+              <img
+                src={getAssetUrl('assets/patterns/l7.png')}
+                alt="Atelier Moodboard"
+                className="mosaic-main-img"
+              />
+              <img
+                src={getAssetUrl('assets/patterns/l1.png')}
+                alt="Atelier Fashion Detail"
+                className="mosaic-floating-img"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. FAQ & Size Guide Section */}
+      <FAQSection />
     </main>
   );
 }

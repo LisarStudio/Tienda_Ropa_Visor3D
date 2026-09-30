@@ -1,26 +1,29 @@
-// Confirmed by the client on 21 September and by Peter on 22 September.
-export const SHIPPING_PER_ORDER = 4000;
+export const SHIPPING_PER_ORDER = 149; // $149 MXN Envío estándar a todo México
+export const FREE_SHIPPING_THRESHOLD = 1499; // Envío gratis a partir de $1,499 MXN
 
-export function calculateOrderTotals(items, discountPercent = 0) {
-  const subtotal = items.reduce((sum, item) =>
-    sum + (item.price + (item.selectedVariant?.priceModifier || 0)) * item.quantity, 0);
+export function calculateOrderTotals(items = [], discountPercent = 0) {
+  if (!Array.isArray(items)) {
+    return { subtotal: 0, discountAmount: 0, shipping: 0, total: 0 };
+  }
+
+  const subtotal = items.reduce((sum, item) => {
+    const qty = Number(item.quantity) || 1;
+    const price = Number(item.price) || 0;
+    const mod = Number(item.selectedVariant?.priceModifier) || 0;
+    return sum + (price + mod) * qty;
+  }, 0);
+
   const discountAmount = Math.round(subtotal * Math.min(100, Math.max(0, discountPercent)) / 100);
-  const shipping = items.length ? SHIPPING_PER_ORDER : 0;
-  return { subtotal, discountAmount, shipping, total: Math.max(0, subtotal - discountAmount) + shipping };
+  const shipping = items.length > 0 ? (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_PER_ORDER) : 0;
+  return {
+    subtotal,
+    discountAmount,
+    shipping,
+    total: Math.max(0, subtotal - discountAmount) + shipping
+  };
 }
 
-// Rehydrate from the current catalogue: saved prices, names and ribbon text are not authoritative.
-export function restoreCart(savedItems, products) {
+export function restoreCart(savedItems, products = []) {
   if (!Array.isArray(savedItems)) return [];
-  const result = [];
-  for (const saved of savedItems) {
-    const product = products.find(p => p.id === saved?.id);
-    if (!product || !Number.isSafeInteger(saved.quantity) || saved.quantity < 1) continue;
-    const variant = product.variants?.find(v =>
-      saved.selectedVariant?.id ? v.id === saved.selectedVariant.id : v.name === saved.selectedVariant?.name) || null;
-    const existing = result.find(item => item.id === product.id && item.selectedVariant?.name === variant?.name);
-    if (existing) existing.quantity += saved.quantity;
-    else result.push({ ...product, quantity: saved.quantity, selectedVariant: variant });
-  }
-  return result;
+  return savedItems.filter(item => item && (item.price || item.name));
 }
