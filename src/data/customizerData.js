@@ -309,42 +309,75 @@ export function getModelFileName(fit, style, length) {
 // Normalizes a color / variant name to find the best match in the GLB variants list
 export function matchVariantName(targetColorId, availableVariants = []) {
   if (!availableVariants || availableVariants.length === 0) return null;
-  const cleanTarget = targetColorId.toLowerCase().trim().replace(/_/g, ' ');
+  const cleanTarget = (targetColorId || '').toLowerCase().trim().replace(/_/g, ' ');
   
   // Exact match
   const exact = availableVariants.find(v => v.toLowerCase().trim() === cleanTarget);
   if (exact) return exact;
 
-  // Fuzzy match keywords
-  const targetWords = cleanTarget.split(' ').filter(Boolean);
-  
-  // Specific aliases
-  if (cleanTarget.includes('mezclilla') || cleanTarget.includes('denim')) {
+  // Specific aliases & typos in 3D models
+  if (cleanTarget.includes('mezclilla') || cleanTarget.includes('denim') || cleanTarget.includes('mezcilla')) {
     const m = availableVariants.find(v => v.toLowerCase().includes('mezc') || v.toLowerCase().includes('denim'));
     if (m) return m;
   }
-  if (cleanTarget.includes('lentejuela')) {
-    const m = availableVariants.find(v => v.toLowerCase().includes('lentejuel') && targetWords.some(w => w !== 'lentejuela' && w !== 'lentejuelas' && v.toLowerCase().includes(w)));
-    if (m) return m;
+  if (cleanTarget.includes('lentejuela') || cleanTarget.includes('lentejuels')) {
+    const colorWord = cleanTarget.replace(/lentejuelas?|lentejuels?/g, '').trim();
+    if (colorWord) {
+      const m = availableVariants.find(v => (v.toLowerCase().includes('lentej') || v.toLowerCase().includes('lentejuels')) && v.toLowerCase().includes(colorWord));
+      if (m) return m;
+    }
+    const fallback = availableVariants.find(v => v.toLowerCase().includes('lentej') || v.toLowerCase().includes('lentejuels'));
+    if (fallback) return fallback;
+  }
+  if (cleanTarget.includes('rayas') || cleanTarget.includes('raya')) {
+    const colorWord = cleanTarget.replace(/rayas?|candy|acanalado/g, '').trim();
+    if (colorWord) {
+      const m = availableVariants.find(v => (v.toLowerCase().includes('raya') || v.toLowerCase().includes('amrillo')) && (v.toLowerCase().includes(colorWord) || (colorWord === 'amarillo' && v.toLowerCase().includes('amrillo'))));
+      if (m) return m;
+    }
   }
   if (cleanTarget.includes('polka')) {
-    const m = availableVariants.find(v => v.toLowerCase().includes('polk') && targetWords.some(w => w !== 'polka' && v.toLowerCase().includes(w)));
+    const colorWord = cleanTarget.replace(/polka|dots?/g, '').trim();
+    const m = availableVariants.find(v => v.toLowerCase().includes('polk') && v.toLowerCase().includes(colorWord));
     if (m) return m;
   }
   if (cleanTarget.includes('bordado')) {
-    const m = availableVariants.find(v => (v.toLowerCase().includes('bordad') || v.toLowerCase().includes('borad')) && targetWords.some(w => w !== 'bordado' && v.toLowerCase().includes(w)));
+    const colorWord = cleanTarget.replace(/bordado/g, '').trim();
+    const m = availableVariants.find(v => (v.toLowerCase().includes('bordad') || v.toLowerCase().includes('borad')) && v.toLowerCase().includes(colorWord));
+    if (m) return m;
+  }
+  if (cleanTarget.includes('cuadros')) {
+    const colorWord = cleanTarget.replace(/cuadros/g, '').trim();
+    const m = availableVariants.find(v => v.toLowerCase().includes('cuadro') && v.toLowerCase().includes(colorWord));
+    if (m) return m;
+  }
+  if (cleanTarget.includes('stripes')) {
+    const colorWord = cleanTarget.replace(/stripes/g, '').trim();
+    const m = availableVariants.find(v => v.toLowerCase().includes('stripe') && v.toLowerCase().includes(colorWord));
+    if (m) return m;
+  }
+  if (cleanTarget.includes('satin')) {
+    const colorWord = cleanTarget.replace(/satin/g, '').trim();
+    const m = availableVariants.find(v => v.toLowerCase().includes('satin') && v.toLowerCase().includes(colorWord));
+    if (m) return m;
+  }
+  if (cleanTarget.includes('mesh fl')) {
+    const colorWord = cleanTarget.replace(/mesh\s+fl/g, '').trim();
+    const m = availableVariants.find(v => v.toLowerCase().includes('mesh fl') && v.toLowerCase().includes(colorWord));
     if (m) return m;
   }
 
   // Word overlap
+  const targetWords = cleanTarget.split(' ').filter(Boolean);
   let bestMatch = null;
-  let bestScore = 0;
+  let bestScore = -1;
   for (const v of availableVariants) {
     const vLower = v.toLowerCase();
     let score = 0;
     for (const w of targetWords) {
-      if (vLower.includes(w)) score++;
+      if (vLower.includes(w)) score += 3;
     }
+    if (vLower.split(' ').length === targetWords.length) score += 1;
     if (score > bestScore) {
       bestScore = score;
       bestMatch = v;

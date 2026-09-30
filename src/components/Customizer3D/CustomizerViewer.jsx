@@ -40,38 +40,64 @@ export function CustomizerViewer({
   const gltfCacheRef = useRef({});
 
   // Helper to switch variant on a GLTF model
-  const applyVariantToGltf = useCallback((gltfData, targetColorName) => {
-    if (!gltfData || !gltfData.scene) return;
-    const variants = gltfData.userData?.variants || [];
-    const matched = matchVariantName(targetColorName, variants);
+  const applyVariantToGltf = useCallback(async (gltfData, targetColorName) => {
+    if (!gltfData || !gltfData.scene || !gltfData.parser) return;
+    const parser = gltfData.parser;
+    const json = parser.json;
+    if (!json) return;
 
-    // If KHR_materials_variants extension parser is available
-    if (gltfData.functions?.selectVariant) {
-      try {
-        gltfData.functions.selectVariant(gltfData.scene, matched);
-        return;
-      } catch (e) {
-        console.warn('GLTF selectVariant error, falling back to manual mapping:', e);
+    // 1. Get raw variant names from KHR_materials_variants extension
+    const rawVariants = json.extensions?.KHR_materials_variants?.variants || [];
+    const variantNames = rawVariants.map((v) => (typeof v === 'string' ? v : v.name));
+    if (variantNames.length === 0) return;
+
+    // 2. Find matching variant
+    const matched = matchVariantName(targetColorName, variantNames);
+    if (!matched) return;
+
+    const variantIndex = variantNames.findIndex(
+      (v) => v.toLowerCase().trim() === matched.toLowerCase().trim()
+    );
+    if (variantIndex === -1) return;
+
+    // 3. Collect all meshes in the active model scene
+    const meshes = [];
+    gltfData.scene.traverse((child) => {
+      if (child.isMesh) {
+        meshes.push(child);
       }
-    }
+    });
 
-    // Manual variant application across all primitives
-    const variantIndex = variants.indexOf(matched);
-    if (variantIndex === -1 && variants.length > 0) return;
+    if (meshes.length === 0) return;
 
-    gltfData.scene.traverse((node) => {
-      if (node.isMesh && node.userData?.gltfExtensions?.KHR_materials_variants) {
-        const mappings = node.userData.gltfExtensions.KHR_materials_variants.mappings || [];
-        const match = mappings.find(m => m.variants && m.variants.includes(variantIndex >= 0 ? variantIndex : 0));
-        if (match && gltfData.parser?.cache?.resources?.material) {
-          const mat = gltfData.parser.cache.resources.material[match.material];
-          if (mat) {
-            node.material = mat;
-            node.material.needsUpdate = true;
+    // 4. Iterate over glTF meshes and primitives to apply mapped materials
+    for (let meshIndex = 0; meshIndex < (json.meshes || []).length; meshIndex++) {
+      const meshDef = json.meshes[meshIndex];
+      const primitives = meshDef.primitives || [];
+
+      for (let primIndex = 0; primIndex < primitives.length; primIndex++) {
+        const prim = primitives[primIndex];
+        const mappings = prim.extensions?.KHR_materials_variants?.mappings || [];
+        const mapping = mappings.find(
+          (m) => m.variants && m.variants.includes(variantIndex)
+        );
+
+        if (mapping !== undefined) {
+          const materialIndex = mapping.material;
+          try {
+            const material = await parser.getDependency('material', materialIndex);
+            if (material) {
+              meshes.forEach((node) => {
+                node.material = material;
+                node.material.needsUpdate = true;
+              });
+            }
+          } catch (err) {
+            console.warn('Error loading variant material dependency:', err);
           }
         }
       }
-    });
+    }
   }, []);
 
   // Initialize Three.js Scene
