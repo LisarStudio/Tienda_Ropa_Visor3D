@@ -34,12 +34,18 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
       {/* Top Luxury Announcement Bar */}
       <div className="brand-announcement-bar">
         <div className="container announcement-content">
-          <span>✨ ENVÍOS A TODO MÉXICO • MERCADO PAGO HASTA 6 MSI & OXXO • HECHO A MANO</span>
+          <div className="announcement-text-wrap">
+            <span className="announcement-highlight">✨ ENVÍOS A TODO MÉXICO</span>
+            <span className="announcement-dot">•</span>
+            <span>MERCADO PAGO HASTA 6 MSI & OXXO</span>
+            <span className="announcement-dot">•</span>
+            <span className="desktop-inline">HECHO A MANO EN ATELIER</span>
+          </div>
           <div className="topbar-right-links desktop-only">
             <a href="#faq" onClick={() => handleNavClick('faq')}>Guía de Tallas & FAQ</a>
-            <span>•</span>
+            <span className="announcement-dot">•</span>
             <a href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
-              WhatsApp: {brand.whatsappFormatted}
+              WhatsApp Concierge: {brand.whatsappFormatted}
             </a>
           </div>
         </div>
@@ -55,7 +61,7 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
             aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
           {/* Brand Logo & Tagline */}
@@ -67,7 +73,7 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
             />
             <div className="brand-logo-text-wrapper">
               <span className="brand-primary-name">{brand.name}</span>
-              <span className="brand-secondary-tagline">{brand.tagline}</span>
+              <span className="brand-secondary-tagline desktop-only">{brand.tagline}</span>
             </div>
           </a>
 
@@ -78,7 +84,7 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
               className="nav-link-item highlight-customizer"
               onClick={() => handleNavClick('personaliza-tu-prenda')}
             >
-              <Sparkles size={15} />
+              <Sparkles size={14} className="sparkle-gold" />
               <span>Personaliza tu prenda</span>
             </button>
             <button
@@ -111,11 +117,11 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
             </button>
           </nav>
 
-          {/* Actions: Search, Wishlist, Cart */}
+          {/* Actions: Search & Cart */}
           <div className="header-actions-group">
-            {/* Search Toggle / Bar */}
+            {/* Desktop Search Bar */}
             <form
-              className={`search-form-bar ${searchOpen ? 'open' : ''}`}
+              className="search-form-bar desktop-only"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleNavClick('catalogo-section');
@@ -124,15 +130,25 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
               <input
                 ref={searchInput}
                 type="search"
-                placeholder="Buscar prenda o color..."
+                placeholder="Buscar prenda o tela..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="search-input"
               />
-              <button type="button" className="search-icon-btn" onClick={toggleSearch}>
-                {searchOpen ? <X size={18} /> : <Search size={20} />}
+              <button type="submit" className="search-icon-btn" aria-label="Buscar">
+                <Search size={18} />
               </button>
             </form>
+
+            {/* Mobile Search Toggle Icon */}
+            <button
+              type="button"
+              className="mobile-search-btn mobile-only"
+              onClick={toggleSearch}
+              aria-label="Buscar"
+            >
+              {searchOpen ? <X size={20} /> : <Search size={20} />}
+            </button>
 
             {/* Cart Button */}
             <button
@@ -142,7 +158,7 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
               aria-label={`Carrito de compras (${cartCount} productos)`}
             >
               <div className="cart-icon-stack">
-                <ShoppingBag size={22} />
+                <ShoppingBag size={20} />
                 {cartCount > 0 && (
                   <span className="cart-badge-count">{cartCount}</span>
                 )}
@@ -151,6 +167,45 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
             </button>
           </div>
         </div>
+
+        {/* Mobile Expandable Search Bar */}
+        {searchOpen && (
+          <div className="mobile-search-dropdown-bar mobile-only">
+            <div className="container mobile-search-inner">
+              <div className="mobile-search-input-wrap">
+                <Search size={18} className="search-icon-inside" />
+                <input
+                  ref={searchInput}
+                  type="search"
+                  placeholder="Buscar prendas, sedas, colores..."
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="mobile-search-input"
+                  autoFocus
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    className="clear-search-btn"
+                    onClick={() => onSearchChange('')}
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                className="btn-search-go"
+                onClick={() => {
+                  setSearchOpen(false);
+                  handleNavClick('catalogo-section');
+                }}
+              >
+                Ver
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile Drawer Menu */}

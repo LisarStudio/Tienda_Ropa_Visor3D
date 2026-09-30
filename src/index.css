@@ -4,32 +4,33 @@
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   
-  /* Brand Official Colors */
+  /* Brand Luxury Palette */
   --brand-cafe: #4a1e1b;
-  --brand-cafe-dark: #321311;
-  --brand-cafe-light: #6e332f;
+  --brand-cafe-dark: #2c0f0d;
+  --brand-cafe-light: #6a2f2b;
+  --brand-cafe-subtle: #8c524e;
   --brand-rosa: #f1b6c7;
-  --brand-rosa-light: #fbeaf0;
-  --brand-rosa-dark: #dc8ba0;
+  --brand-rosa-light: #fdf2f5;
+  --brand-rosa-dark: #d9889f;
   --brand-amarillo: #faf4d4;
-  --brand-amarillo-light: #fdfcf3;
-  --brand-amarillo-dark: #ebd994;
+  --brand-amarillo-light: #fefdf7;
+  --brand-amarillo-dark: #ebd889;
   
   --bg-primary: #ffffff;
-  --bg-secondary: #fdfaf6;
+  --bg-secondary: #fdfaf7;
   --bg-card: #ffffff;
-  --bg-card-hover: #fffdfa;
+  --bg-card-hover: #fffdfb;
   --border-color: rgba(74, 30, 27, 0.1);
   --border-active: #4a1e1b;
   
-  --text-main: #2c1210;
-  --text-muted: #6b4c49;
-  --text-subtle: #967471;
+  --text-main: #240c0b;
+  --text-muted: #5e3b38;
+  --text-subtle: #8c6a67;
   
-  --shadow-sm: 0 2px 6px rgba(74, 30, 27, 0.04);
-  --shadow-md: 0 8px 24px rgba(74, 30, 27, 0.08);
-  --shadow-lg: 0 16px 36px rgba(74, 30, 27, 0.12);
-  --shadow-glow: 0 8px 30px rgba(241, 182, 199, 0.35);
+  --shadow-sm: 0 2px 8px rgba(74, 30, 27, 0.04);
+  --shadow-md: 0 10px 30px rgba(74, 30, 27, 0.08);
+  --shadow-lg: 0 20px 48px rgba(74, 30, 27, 0.12);
+  --shadow-glow: 0 10px 35px rgba(241, 182, 199, 0.4);
   
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -43,16 +44,32 @@
   padding: 0;
 }
 
-body {
-  font-family: var(--font-sans);
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
   background-color: var(--bg-secondary);
   color: var(--text-main);
+  font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 h1, h2, h3, h4, h5, h6, .font-serif {
   font-family: var(--font-serif);
+  letter-spacing: -0.01em;
 }
 
 a {

@@ -540,21 +540,54 @@
 }
 
 @media (max-width: 768px) {
+  .customizer-controls-panel {
+    border-radius: 20px;
+  }
   .customizer-tab-body {
     max-height: none;
-    padding: 18px 14px;
+    padding: 16px 12px;
+  }
+  .options-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .options-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .sizes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .option-card {
+    padding: 12px 10px;
+    border-radius: 12px;
+  }
+  .card-name {
+    font-size: 0.88rem;
+  }
+  .card-desc {
+    font-size: 0.72rem;
   }
   .customizer-footer-bar {
     flex-direction: column;
     align-items: stretch;
-    padding: 14px;
+    padding: 14px 16px;
+    gap: 12px;
   }
   .add-custom-to-cart-btn {
     width: 100%;
     justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.9rem;
   }
+}
+
+@media (max-width: 480px) {
   .options-grid-2,
-  .options-grid-3,
+  .options-grid-3 {
+    grid-template-columns: 1fr;
+  }
   .sizes-grid {
     grid-template-columns: 1fr;
   }

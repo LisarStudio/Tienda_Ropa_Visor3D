@@ -229,20 +229,34 @@
 @media (max-width: 768px) {
   .customizer-viewer-container,
   .customizer-canvas-target {
-    min-height: 420px;
-    height: 420px;
-    border-radius: 18px;
+    min-height: 400px;
+    height: 400px;
+    border-radius: 20px;
+  }
+  .customizer-watermark {
+    top: 12px;
+    left: 12px;
+  }
+  .customizer-floating-tools {
+    top: 12px;
+    right: 12px;
+    gap: 6px;
+  }
+  .tool-icon-btn {
+    width: 34px;
+    height: 34px;
   }
   .customizer-drag-hint {
     display: none;
   }
   .customizer-presets-bar {
-    bottom: 14px;
-    padding: 4px 8px;
+    bottom: 12px;
+    padding: 4px 6px;
     gap: 4px;
+    max-width: calc(100% - 24px);
   }
   .preset-btn {
-    padding: 5px 10px;
-    font-size: 0.72rem;
+    padding: 5px 8px;
+    font-size: 0.7rem;
   }
 }
