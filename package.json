@@ -1,9 +1,9 @@
 {
-  "name": "daniela-atelier-3d",
+  "name": "tienda-ropa-visor3d",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://lisarstudio.github.io/daniela-atelier-3d",
+  "homepage": "https://lisarstudio.github.io/Tienda_Ropa_Visor3D",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
