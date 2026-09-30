@@ -1,9 +1,9 @@
 {
-  "name": "lisarstudio-demo",
+  "name": "daniela-atelier-3d",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "homepage": "https://lisarstudio.github.io/lisarstudio-demo",
+  "homepage": "https://lisarstudio.github.io/daniela-atelier-3d",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
