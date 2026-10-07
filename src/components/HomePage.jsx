@@ -25,9 +25,10 @@ export function HomePage({onSelectProduct, activeCategory='todos', onSelectCateg
   if(sortBy==='name')list.sort((a,b)=>a.name.localeCompare(b.name));
   return list;
  },[category,searchQuery,sortBy]);
- const customize=()=>{window.location.hash='personaliza/strapless';};
- if(page==='personaliza/strapless')return <main><a className="back-to-designs" href="#personaliza-tu-prenda">← Prendas para personalizar</a><CustomizerSection onAddToCart={onAddToCart}/></main>;
- if(page==='personaliza-tu-prenda')return <main className="container design-selection"><h1>Personaliza tu prenda</h1><button className="design-card" onClick={customize}><img src={clientData.products[0].image} alt="Top strapless"/><span>Top strapless</span><span>Personalizar →</span></button></main>;
+ const customize=()=>{window.location.hash='personaliza-tu-prenda';};
+ if (page === 'personaliza-tu-prenda' || page === 'personaliza/strapless') {
+  return <main><CustomizerSection onAddToCart={onAddToCart}/></main>;
+ }
  if(page==='faq')return <main><FAQSection/></main>;
  if(catalogPage)return <main className="container ready-to-wear-section"><h1>{page==='best-sellers'?'Best sellers':page==='new-in'?'New in':'Catálogo'}</h1><CategoryFilter categories={clientData.categories} activeCategory={category} onSelectCategory={cat=>{onSelectCategory(cat);window.location.hash='catalogo-section';}} sortBy={sortBy} onSortChange={onSortChange} totalItems={products.length}/><ProductGrid products={products} category={category} onSelectProduct={onSelectProduct} onCustomizeClick={customize}/></main>;
  return <main className="brand-homepage-container"><Hero onCustomizeClick={()=>{window.location.hash='personaliza-tu-prenda';}} onExploreClick={()=>{window.location.hash='catalogo-section';}}/><section className="container home-category-links">{[['personaliza-tu-prenda','Personaliza tu prenda'],['catalogo-section','Catálogo'],['best-sellers','Best sellers'],['new-in','New in']].map(([id,label])=><a key={id} href={'#'+id}>{label} →</a>)}</section></main>;

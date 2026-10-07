@@ -123,3 +123,15 @@
 .customizer-grid-layout { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); }
 .customizer-col-viewer, .customizer-col-controls { min-width: 0; }
 @media(max-width:1024px) { .customizer-grid-layout { grid-template-columns: minmax(0,1fr); } }
+
+/* A short introduction, with the configurator immediately available. */
+.customizer-intro-label { display:block; color:#8c524e; font-size:.72rem; font-weight:700; letter-spacing:.15em; margin-bottom:10px; }
+.customizer-intro-steps { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; list-style:none; padding:0; margin:20px 0 0; }
+.customizer-intro-steps li { display:flex; align-items:center; gap:8px; color:#5c3835; font-size:.8rem; }
+.customizer-intro-steps li > span { display:grid; place-items:center; flex-shrink:0; width:25px; height:25px; border-radius:50%; background:#faf4d4; color:#4a1e1b; font-weight:700; }
+@media(max-width:600px) {
+ .customizer-section-container { padding-top:24px; }
+ .customizer-section-header { margin-bottom:24px; }
+ .customizer-intro-steps { gap:8px 14px; margin-top:16px; }
+ .customizer-intro-steps li { font-size:.74rem; }
+}

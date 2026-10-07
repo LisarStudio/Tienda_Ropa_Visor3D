@@ -67,9 +67,14 @@ export function CustomizerSection({ onAddToCart }) {
 
       {/* Header & Description */}
       <div className="customizer-section-header">
-
-        <h2 className="section-title">Personaliza tu Top Strapless</h2>
-
+        <span className="customizer-intro-label">TU TOP, A TU GUSTO</span>
+        <h1 className="section-title">Diseña tu top strapless en 3D</h1>
+        <p className="section-description">Elige las opciones y mira cómo cambia tu prenda. Arrastra el modelo para verla desde todos los ángulos.</p>
+        <ol className="customizer-intro-steps" aria-label="Cómo personalizar tu prenda">
+          <li><span aria-hidden="true">1</span> Elige corte y largo</li>
+          <li><span aria-hidden="true">2</span> Prueba telas y colores</li>
+          <li><span aria-hidden="true">3</span> Define tu talla y añádelo a la bolsa</li>
+        </ol>
       </div>
 
       {/* Main 2-Column Customizer Layout */}

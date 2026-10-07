@@ -11,8 +11,8 @@ try {
   window.location.hash='#'+page;
   const html=renderToStaticMarkup(React.createElement(HomePage,props));
   assert.ok(html.length>100,page);
-  assert.equal(html.includes('customizer-viewer-container'),page==='personaliza/strapless',page+' isolates the viewer');
-  if(page==='personaliza/strapless'){assert.ok(html.includes('Regular'));assert.ok(html.includes('Blanco'));assert.ok(!html.includes('Selecciona el tipo de calce'));}
+  assert.equal(html.includes('customizer-viewer-container'),['personaliza-tu-prenda','personaliza/strapless'].includes(page),page+' isolates the viewer');
+  if(['personaliza-tu-prenda','personaliza/strapless'].includes(page)){assert.ok(html.includes('Cómo personalizar tu prenda'));assert.ok(!html.includes('design-card'));assert.ok(html.includes('Regular'));assert.ok(html.includes('Blanco'));assert.ok(!html.includes('Selecciona el tipo de calce'));}
   assert.ok(!html.includes('Daniela Atelier'));
   console.log('PASS',page);
  }
