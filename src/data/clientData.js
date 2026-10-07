@@ -11,7 +11,7 @@ export const getAssetUrl = (path) => {
 
 export const clientData = {
   brand: {
-    name: "Daniela",
+    name: "Ninna Wear",
     studioName: "Lisar Studio",
     tagline: "Handmade • Chic • Feminine",
     subtagline: "Prendas de autor hechas a mano en México y personalizables en 3D en tiempo real.",

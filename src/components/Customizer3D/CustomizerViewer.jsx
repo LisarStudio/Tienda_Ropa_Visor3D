@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { MODEL_VARIANTS } from '../../data/modelVariants';
 import { getAssetUrl } from '../../data/clientData';
 import { getModelFileName, matchVariantName } from '../../data/customizerData';
 import { RotateCw, ZoomIn, ZoomOut, Camera, Eye, RefreshCw, Sparkles } from 'lucide-react';
@@ -10,11 +11,11 @@ import './CustomizerViewer.css';
 export function CustomizerViewer({
   fit = 'pegado',
   style = 'regular',
-  length = 'crop',
+  length = 'regular',
   withStraps = false,
   withScarf = false,
   selectedFabricId = 'algodon',
-  selectedColorId = 'rosa',
+  selectedColorId = 'blanco',
   onCaptureSnapshot
 }) {
   const containerRef = useRef(null);
@@ -23,6 +24,9 @@ export function CustomizerViewer({
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
 
+  const colorRef = useRef(selectedColorId);
+  colorRef.current = selectedColorId;
+  const [loadError, setLoadError] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadProgress, setLoadProgress] = useState(0);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -60,44 +64,20 @@ export function CustomizerViewer({
     );
     if (variantIndex === -1) return;
 
-    // 3. Collect all meshes in the active model scene
-    const meshes = [];
-    gltfData.scene.traverse((child) => {
-      if (child.isMesh) {
-        meshes.push(child);
-      }
+    const request = (gltfData.variantRequest || 0) + 1;
+    gltfData.variantRequest = request;
+    const updates = [];
+    gltfData.scene.traverse(node => {
+      if (!node.isMesh) return;
+      const association = parser.associations.get(node);
+      const primitive = json.meshes?.[association?.meshes]?.primitives?.[association?.primitives ?? 0];
+      const mapping = primitive?.extensions?.KHR_materials_variants?.mappings?.find(m=>m.variants.includes(variantIndex));
+      if (mapping) updates.push(parser.getDependency('material', mapping.material).then(material=>({node,material})));
     });
+    const resolved = await Promise.all(updates);
+    if (gltfData.variantRequest !== request) return;
+    for (const {node, material} of resolved) node.material = material;
 
-    if (meshes.length === 0) return;
-
-    // 4. Iterate over glTF meshes and primitives to apply mapped materials
-    for (let meshIndex = 0; meshIndex < (json.meshes || []).length; meshIndex++) {
-      const meshDef = json.meshes[meshIndex];
-      const primitives = meshDef.primitives || [];
-
-      for (let primIndex = 0; primIndex < primitives.length; primIndex++) {
-        const prim = primitives[primIndex];
-        const mappings = prim.extensions?.KHR_materials_variants?.mappings || [];
-        const mapping = mappings.find(
-          (m) => m.variants && m.variants.includes(variantIndex)
-        );
-
-        if (mapping !== undefined) {
-          const materialIndex = mapping.material;
-          try {
-            const material = await parser.getDependency('material', materialIndex);
-            if (material) {
-              meshes.forEach((node) => {
-                node.material = material;
-                node.material.needsUpdate = true;
-              });
-            }
-          } catch (err) {
-            console.warn('Error loading variant material dependency:', err);
-          }
-        }
-      }
-    }
   }, []);
 
   // Initialize Three.js Scene
@@ -127,8 +107,8 @@ export function CustomizerViewer({
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMapping = THREE.NeutralToneMapping;
+    renderer.toneMappingExposure = 1.1;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -146,13 +126,13 @@ export function CustomizerViewer({
     controlsRef.current = controls;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xfff5ee, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambientLight);
 
     // Key Light
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
     keyLight.position.set(2, 4, 3);
-    keyLight.castShadow = true;
+    keyLight.castShadow = false;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
     keyLight.shadow.camera.near = 0.5;
@@ -160,7 +140,7 @@ export function CustomizerViewer({
     scene.add(keyLight);
 
     // Fill Light (Soft warm pink fill)
-    const fillLight = new THREE.DirectionalLight(0xfce7f3, 1.2);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 1.5);
     fillLight.position.set(-2.5, 2, 1.5);
     scene.add(fillLight);
 
@@ -188,6 +168,8 @@ export function CustomizerViewer({
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(container);
     window.addEventListener('resize', handleResize);
 
     // Animation Loop
@@ -195,7 +177,7 @@ export function CustomizerViewer({
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       if (controlsRef.current) {
-        controlsRef.current.autoRotate = autoRotate;
+
         controlsRef.current.update();
       }
       renderer.render(scene, camera);
@@ -204,6 +186,7 @@ export function CustomizerViewer({
 
     return () => {
       cancelAnimationFrame(animationId);
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -226,24 +209,16 @@ export function CustomizerViewer({
       return gltfCacheRef.current[url];
     }
     const loader = new GLTFLoader();
-    return new Promise((resolve, reject) => {
-      loader.load(
-        url,
-        (gltf) => {
-          gltfCacheRef.current[url] = gltf;
-          resolve(gltf);
-        },
-        (xhr) => {
-          if (xhr.lengthComputable && xhr.total > 0) {
-            setLoadProgress(Math.round((xhr.loaded / xhr.total) * 100));
-          }
-        },
-        (error) => {
-          console.error('Error loading GLTF model:', url, error);
-          reject(error);
-        }
-      );
-    });
+    const promise = loader.loadAsync(url, xhr => {
+      if (xhr.lengthComputable && xhr.total > 0) setLoadProgress(Math.round(xhr.loaded/xhr.total*100));
+    }).then(gltf=>{
+      const names = MODEL_VARIANTS[url.split('/').pop()];
+      if (names) gltf.parser.json.extensions.KHR_materials_variants.variants = names.map(name=>({name}));
+      gltfCacheRef.current[url]=gltf;return gltf;
+    }).catch(error=>{delete gltfCacheRef.current[url];throw error;});
+    gltfCacheRef.current[url]=promise;
+    return promise;
+
   }, []);
 
   // Load Avatar Base (Mannequin) once
@@ -255,7 +230,7 @@ export function CustomizerViewer({
     const avatarUrl = getAssetUrl('assets/models/avatar_base.glb');
 
     loadGltf(avatarUrl)
-      .then((gltf) => {
+      .then(async (gltf) => {
         if (!isMounted) return;
         if (modelsRef.current.avatar) {
           scene.remove(modelsRef.current.avatar);
@@ -287,13 +262,16 @@ export function CustomizerViewer({
     if (!scene) return;
 
     let isMounted = true;
-    setLoading(true);
+    setLoading(!modelsRef.current.top);
+    setLoadError('');
 
     const topFileName = getModelFileName(fit, style, length);
     const topUrl = getAssetUrl(`assets/models/${topFileName}`);
 
     loadGltf(topUrl)
-      .then((gltf) => {
+      .then(async (gltf) => {
+        if (!isMounted) return;
+        await applyVariantToGltf(gltf, colorRef.current);
         if (!isMounted) return;
         if (modelsRef.current.top) {
           scene.remove(modelsRef.current.top);
@@ -310,10 +288,13 @@ export function CustomizerViewer({
         scene.add(topScene);
         modelsRef.current.top = topScene;
 
-        applyVariantToGltf(gltf, selectedColorId);
+        await applyVariantToGltf(gltf, colorRef.current);
+        if (!isMounted) return;
         setLoading(false);
       })
       .catch((err) => {
+        if (!isMounted) return;
+        setLoadError('No se pudo cargar la prenda. Revisa tu conexión y vuelve a elegir el modelo.');
         console.error('Error loading top model:', err);
         setLoading(false);
       });
@@ -321,7 +302,7 @@ export function CustomizerViewer({
     return () => {
       isMounted = false;
     };
-  }, [fit, style, length, loadGltf, applyVariantToGltf, selectedColorId]);
+  }, [fit, style, length, loadGltf, applyVariantToGltf]);
 
   // Update Straps (Tirantes) model
   useEffect(() => {
@@ -340,7 +321,7 @@ export function CustomizerViewer({
 
     const strapsUrl = getAssetUrl('assets/models/tirantes.glb');
     loadGltf(strapsUrl)
-      .then((gltf) => {
+      .then(async (gltf) => {
         if (!isMounted) return;
         if (modelsRef.current.straps) {
           scene.remove(modelsRef.current.straps);
@@ -357,14 +338,15 @@ export function CustomizerViewer({
         scene.add(strapsScene);
         modelsRef.current.straps = strapsScene;
 
-        applyVariantToGltf(gltf, selectedColorId);
+        await applyVariantToGltf(gltf, colorRef.current);
+        if (!isMounted) return;
       })
       .catch((err) => console.error('Error loading straps model:', err));
 
     return () => {
       isMounted = false;
     };
-  }, [withStraps, loadGltf, applyVariantToGltf, selectedColorId]);
+  }, [withStraps, loadGltf, applyVariantToGltf]);
 
   // Update Scarf (Bufanda) model
   useEffect(() => {
@@ -383,7 +365,7 @@ export function CustomizerViewer({
 
     const scarfUrl = getAssetUrl('assets/models/bufanda.glb');
     loadGltf(scarfUrl)
-      .then((gltf) => {
+      .then(async (gltf) => {
         if (!isMounted) return;
         if (modelsRef.current.scarf) {
           scene.remove(modelsRef.current.scarf);
@@ -400,14 +382,15 @@ export function CustomizerViewer({
         scene.add(scarfScene);
         modelsRef.current.scarf = scarfScene;
 
-        applyVariantToGltf(gltf, selectedColorId);
+        await applyVariantToGltf(gltf, colorRef.current);
+        if (!isMounted) return;
       })
       .catch((err) => console.error('Error loading scarf model:', err));
 
     return () => {
       isMounted = false;
     };
-  }, [withScarf, loadGltf, applyVariantToGltf, selectedColorId]);
+  }, [withScarf, loadGltf, applyVariantToGltf]);
 
   // Sync Color Variant Across all active pieces whenever color changes
   useEffect(() => {
@@ -492,6 +475,7 @@ export function CustomizerViewer({
       {/* 3D WebGL Canvas Target */}
       <div ref={containerRef} className="customizer-canvas-target" />
 
+      {loadError && <div className="viewer-error" role="alert">{loadError}</div>}
       {/* Loading Overlay */}
       {loading && (
         <div className="customizer-loading-overlay">
@@ -512,7 +496,7 @@ export function CustomizerViewer({
         <span className="watermark-badge">
           <Sparkles size={13} className="inline-icon" /> VISOR 3D REAL-TIME
         </span>
-        <span className="watermark-brand">DANIELA • ATELIER</span>
+
       </div>
 
       {/* Floating Camera Presets Bar */}
@@ -564,7 +548,8 @@ export function CustomizerViewer({
         <button
           type="button"
           className={`tool-icon-btn ${autoRotate ? 'active' : ''}`}
-          onClick={() => setAutoRotate(!autoRotate)}
+          aria-pressed={autoRotate}
+          onClick={() => setAutoRotate(value => !value)}
           title="Giro Automático 360°"
         >
           <RotateCw size={18} className={autoRotate ? 'spin-slow' : ''} />
@@ -605,7 +590,7 @@ export function CustomizerViewer({
 
       {/* Interactive Helper Hint */}
       <div className="customizer-drag-hint">
-        <span>Arastra para rotar en 360° • Pellizca o rueda para hacer zoom</span>
+        <span>Arrastra para rotar en 360° • Pellizca o rueda para hacer zoom</span>
       </div>
     </div>
   );

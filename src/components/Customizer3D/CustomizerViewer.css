@@ -260,3 +260,9 @@
     font-size: 0.7rem;
   }
 }
+
+.customizer-canvas-target { position:absolute; inset:0; min-width:0; }
+.customizer-canvas-target canvas { display:block; max-width:100%; }
+.customizer-presets-bar { width:max-content; max-width:calc(100% - 16px); flex-wrap:wrap; justify-content:center; }
+.viewer-error { position:absolute; bottom:100px; left:16px; right:16px; padding:12px; background:white; color:#4a1e1b; z-index:21; }
+@media(max-width:380px) { .preset-btn { padding:5px 6px; } .customizer-watermark { max-width:calc(100% - 68px); } .watermark-badge { font-size:.58rem; letter-spacing:.04em; } }

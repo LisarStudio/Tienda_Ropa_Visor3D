@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { CustomizerViewer } from './CustomizerViewer';
 import { CustomizerControls } from './CustomizerControls';
 import { IncompatibilityModal } from './IncompatibilityModal';
-import { Sparkles, Layers, ShieldCheck, Heart, Share2, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import './CustomizerSection.css';
 
 export function CustomizerSection({ onAddToCart }) {
   // State for 3D Customizer
   const [fit, setFit] = useState('pegado');
   const [style, setStyle] = useState('regular');
-  const [length, setLength] = useState('crop');
+  const [length, setLength] = useState('regular');
   const [withStraps, setWithStraps] = useState(false);
   const [withScarf, setWithScarf] = useState(false);
   const [selectedFabricId, setSelectedFabricId] = useState('algodon');
-  const [selectedColorId, setSelectedColorId] = useState('rosa');
+  const [selectedColorId, setSelectedColorId] = useState('blanco');
   const [size, setSize] = useState('S');
   const [customMeasurements, setCustomMeasurements] = useState({ bust: '', waist: '', notes: '' });
 
@@ -43,9 +43,9 @@ export function CustomizerSection({ onAddToCart }) {
     setIsIncompatibleModalOpen(false);
     // Switch to compatible stretch fabric
     setSelectedFabricId('algodon');
-    setSelectedColorId('rosa');
+    setSelectedColorId('blanco');
     setWithScarf(true);
-    showToast('Se cambió la tela a Algodón Rosa y se agregó la bufanda.');
+    showToast('Se cambió la tela a Algodón Blanco y se agregó la bufanda.');
   };
 
   const handleAddToCartWrapper = (customItem) => {
@@ -67,15 +67,9 @@ export function CustomizerSection({ onAddToCart }) {
 
       {/* Header & Description */}
       <div className="customizer-section-header">
-        <div className="section-badge-wrapper">
-          <span className="section-eyebrow-badge">
-            <Sparkles size={14} /> TALLER DE DISEÑO 3D EN TIEMPO REAL
-          </span>
-        </div>
+
         <h2 className="section-title">Personaliza tu Top Strapless</h2>
-        <p className="section-description">
-          Elige silueta, largo, accesorios y explora más de 40 opciones de telas exclusivas con visualización tridimensional interactiva y confección a tu medida exacta.
-        </p>
+
       </div>
 
       {/* Main 2-Column Customizer Layout */}

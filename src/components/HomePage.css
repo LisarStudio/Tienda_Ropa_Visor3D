@@ -202,3 +202,12 @@
     text-align: center;
   }
 }
+
+.design-selection { padding-top:36px; padding-bottom:64px; }
+.design-selection h1 { margin-bottom:28px; }
+.design-card { display:flex; flex-direction:column; gap:14px; width:min(100%,320px); text-align:left; color:#4a1e1b; font-size:1.15rem; }
+.design-card img { width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:8px; }
+.back-to-designs { display:block; max-width:1380px; margin:24px auto 0; padding:0 24px; }
+.home-category-links { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; padding-top:32px; padding-bottom:48px; }
+.home-category-links a { background:#faf4d4; padding:28px 20px; font-family:var(--font-serif); font-size:1.3rem; }
+@media(max-width:700px) { .home-category-links { grid-template-columns:repeat(2,minmax(0,1fr)); } }

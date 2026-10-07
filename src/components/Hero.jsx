@@ -71,7 +71,7 @@ export function Hero({ onCustomizeClick, onExploreClick }) {
             <div className="hero-card-image-wrapper">
               <img
                 src={heroPattern}
-                alt="Daniela Atelier Fashion Preview"
+                alt="Ninna Wear Fashion Preview"
                 className="hero-card-img"
               />
               <div className="hero-card-badge-3d">

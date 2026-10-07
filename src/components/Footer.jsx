@@ -72,7 +72,7 @@ export function Footer({ onSelectCategory }) {
       {/* Sub Footer */}
       <div className="container sub-footer-row">
         <div>
-          © {new Date().getFullYear()} {brand.name} Atelier. Todos los derechos reservados.
+          © {new Date().getFullYear()} {brand.name}. Todos los derechos reservados.
         </div>
         <div className="sub-footer-credits">
           <span>Handmade with</span> <Heart size={14} className="heart-icon" /> <span>• Con tecnología 3D por Lisar Studio</span>

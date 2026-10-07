@@ -1,176 +1,34 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Hero } from './Hero';
 import { CustomizerSection } from './Customizer3D/CustomizerSection';
 import { CategoryFilter } from './CategoryFilter';
 import { ProductGrid } from './ProductGrid';
 import { FAQSection } from './FAQSection';
-import { clientData, getAssetUrl } from '../data/clientData';
-import { Sparkles, Scissors, Heart, ShieldCheck, Truck, ArrowRight } from 'lucide-react';
+import { clientData } from '../data/clientData';
 import './HomePage.css';
 
-export function HomePage({
-  onSelectProduct,
-  activeCategory = 'todos',
-  onSelectCategory,
-  searchQuery = '',
-  sortBy = 'featured',
-  onSortChange,
-  onAddToCart
-}) {
-  const brand = clientData.brand;
-  const allProducts = clientData.products;
-
-  // Filter and Sort Catalog Products
-  const displayedProducts = useMemo(() => {
-    let list = [...allProducts];
-
-    // Category filter
-    if (activeCategory && activeCategory !== 'todos' && activeCategory !== 'all') {
-      list = list.filter(p =>
-        p.category === activeCategory ||
-        p.categorySlugs?.includes(activeCategory)
-      );
-    }
-
-    // Search filter
-    if (searchQuery && searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      list = list.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    }
-
-    // Sort
-    if (sortBy === 'price-low') {
-      list.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-high') {
-      list.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'name') {
-      list.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return list;
-  }, [allProducts, activeCategory, searchQuery, sortBy]);
-
-  const scrollToCustomizer = () => {
-    const el = document.getElementById('personaliza-tu-prenda');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToCatalog = () => {
-    const el = document.getElementById('catalogo-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return (
-    <main className="brand-homepage-container" id="inicio">
-      {/* 1. Hero Section */}
-      <Hero
-        onCustomizeClick={scrollToCustomizer}
-        onExploreClick={scrollToCatalog}
-      />
-
-      {/* 2. Value Proposition Pillars */}
-      <section className="atelier-pillars-banner">
-        <div className="container pillars-grid">
-          <div className="pillar-item">
-            <div className="pillar-icon-wrap"><Scissors size={22} /></div>
-            <div>
-              <strong>Confección 100% a Mano</strong>
-              <p>Cada pieza es cortada y confeccionada artesanalmente en nuestro taller.</p>
-            </div>
-          </div>
-          <div className="pillar-item">
-            <div className="pillar-icon-wrap"><Sparkles size={22} /></div>
-            <div>
-              <strong>Diseño 3D en Tiempo Real</strong>
-              <p>Visualiza combinaciones de cortes, tirantes y más de 40 telas en 360°.</p>
-            </div>
-          </div>
-          <div className="pillar-item">
-            <div className="pillar-icon-wrap"><Heart size={22} /></div>
-            <div>
-              <strong>Tallas Estándar & A Medida</strong>
-              <p>Desde XS a XL o ajustada a tus centímetros de busto y cintura.</p>
-            </div>
-          </div>
-          <div className="pillar-item">
-            <div className="pillar-icon-wrap"><Truck size={22} /></div>
-            <div>
-              <strong>Envíos a Todo el País</strong>
-              <p>Despacho seguro y seguimiento personalizado de tu pedido.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. The 3D Customizer Interactive Studio (Star Feature) */}
-      <CustomizerSection onAddToCart={onAddToCart} />
-
-      {/* 4. Ready-to-Wear Catalog */}
-      <section className="container ready-to-wear-section">
-        <CategoryFilter
-          categories={clientData.categories}
-          activeCategory={activeCategory}
-          onSelectCategory={onSelectCategory}
-          sortBy={sortBy}
-          onSortChange={onSortChange}
-          totalItems={displayedProducts.length}
-        />
-
-        <ProductGrid
-          products={displayedProducts}
-          category={activeCategory}
-          onSelectProduct={onSelectProduct}
-          onCustomizeClick={scrollToCustomizer}
-        />
-      </section>
-
-      {/* 5. Brand Identity & Atelier Spotlight */}
-      <section className="atelier-story-section">
-        <div className="container story-grid">
-          <div className="story-content-col">
-            <span className="story-eyebrow">LA FILOSOFÍA DEL ATELIER</span>
-            <h2 className="story-title">Handmade • Chic • Feminine</h2>
-            <p className="story-paragraph">
-              En <strong>Daniela Atelier</strong> creemos en una moda femenina consciente, donde la tecnología 3D se une con la alta costura tradicional. Cada top, vestido o falda se diseña pensando en realzar la belleza y seguridad de cada mujer con telas exclusivas y calces perfectos.
-            </p>
-            <div className="story-brand-badge-row">
-              <span className="story-pill">Taller en Chile</span>
-              <span className="story-pill">Textiles de Alta Calidad</span>
-              <span className="story-pill">Atención Personalizada</span>
-            </div>
-            <button
-              type="button"
-              className="btn-primary story-cta"
-              onClick={scrollToCustomizer}
-            >
-              <Sparkles size={16} />
-              <span>Crear mi propio diseño</span>
-            </button>
-          </div>
-
-          <div className="story-visual-col">
-            <div className="story-image-mosaic">
-              <img
-                src={getAssetUrl('assets/patterns/l7.png')}
-                alt="Atelier Moodboard"
-                className="mosaic-main-img"
-              />
-              <img
-                src={getAssetUrl('assets/patterns/l1.png')}
-                alt="Atelier Fashion Detail"
-                className="mosaic-floating-img"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. FAQ & Size Guide Section */}
-      <FAQSection />
-    </main>
-  );
+export function HomePage({onSelectProduct, activeCategory='todos', onSelectCategory, searchQuery='', sortBy='featured', onSortChange, onAddToCart}) {
+ const [page,setPage] = useState(()=>window.location.hash.slice(1)||'inicio');
+ useEffect(()=>{
+  const change=()=>{setPage(window.location.hash.slice(1)||'inicio');window.scrollTo({top:0,behavior:'instant'});};
+  window.addEventListener('hashchange',change);
+  return ()=>window.removeEventListener('hashchange',change);
+ },[]);
+ const catalogPage = ['catalogo-section','catalogo','best-sellers','new-in'].includes(page);
+ const category = ['best-sellers','new-in'].includes(page) ? page : activeCategory;
+ const products=useMemo(()=>{
+  let list=clientData.products.filter(p=>category==='todos'||category==='all'||p.category===category||p.categorySlugs?.includes(category));
+  const query=searchQuery.trim().toLowerCase();
+  if(query)list=list.filter(p=>[p.name,p.description,p.category].join(' ').toLowerCase().includes(query));
+  if(sortBy==='price-low')list.sort((a,b)=>a.price-b.price);
+  if(sortBy==='price-high')list.sort((a,b)=>b.price-a.price);
+  if(sortBy==='name')list.sort((a,b)=>a.name.localeCompare(b.name));
+  return list;
+ },[category,searchQuery,sortBy]);
+ const customize=()=>{window.location.hash='personaliza/strapless';};
+ if(page==='personaliza/strapless')return <main><a className="back-to-designs" href="#personaliza-tu-prenda">← Prendas para personalizar</a><CustomizerSection onAddToCart={onAddToCart}/></main>;
+ if(page==='personaliza-tu-prenda')return <main className="container design-selection"><h1>Personaliza tu prenda</h1><button className="design-card" onClick={customize}><img src={clientData.products[0].image} alt="Top strapless"/><span>Top strapless</span><span>Personalizar →</span></button></main>;
+ if(page==='faq')return <main><FAQSection/></main>;
+ if(catalogPage)return <main className="container ready-to-wear-section"><h1>{page==='best-sellers'?'Best sellers':page==='new-in'?'New in':'Catálogo'}</h1><CategoryFilter categories={clientData.categories} activeCategory={category} onSelectCategory={cat=>{onSelectCategory(cat);window.location.hash='catalogo-section';}} sortBy={sortBy} onSortChange={onSortChange} totalItems={products.length}/><ProductGrid products={products} category={category} onSelectProduct={onSelectProduct} onCustomizeClick={customize}/></main>;
+ return <main className="brand-homepage-container"><Hero onCustomizeClick={()=>{window.location.hash='personaliza-tu-prenda';}} onExploreClick={()=>{window.location.hash='catalogo-section';}}/><section className="container home-category-links">{[['personaliza-tu-prenda','Personaliza tu prenda'],['catalogo-section','Catálogo'],['best-sellers','Best sellers'],['new-in','New in']].map(([id,label])=><a key={id} href={'#'+id}>{label} →</a>)}</section></main>;
 }

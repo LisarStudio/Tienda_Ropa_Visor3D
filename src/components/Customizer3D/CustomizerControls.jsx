@@ -6,6 +6,7 @@ import {
   ACCESSORY_OPTIONS,
   FABRIC_GROUPS,
   SIZES,
+  getModelFileName, matchVariantName,
   calculateCustomizerPrice
 } from '../../data/customizerData';
 import {
@@ -21,6 +22,8 @@ import {
   ChevronRight,
   ShieldAlert
 } from 'lucide-react';
+import { MODEL_VARIANTS } from '../../data/modelVariants';
+import { getAssetUrl } from '../../data/clientData';
 import { formatPrice } from '../../utils/currency';
 import './CustomizerControls.css';
 
@@ -47,7 +50,17 @@ export function CustomizerControls({
   onOpenIncompatibilityModal
 }) {
   const [activeTab, setActiveTab] = useState('fit');
+  const [availabilityNotice, setAvailabilityNotice] = useState('');
+  const selectCut = (nextStyle, nextLength) => {
+    const names = MODEL_VARIANTS[getModelFileName(fit, nextStyle, nextLength)] || [];
+    if (!matchVariantName(selectedColorId, names)) {
+      setSelectedFabricId('algodon'); setSelectedColorId('blanco');
+      setAvailabilityNotice('La tela elegida no está disponible en este corte. Se seleccionó Algodón blanco.');
+    } else setAvailabilityNotice('');
+    setStyle(nextStyle); setLength(nextLength);
+  };
 
+  const availableVariants = MODEL_VARIANTS[getModelFileName(fit, style, length)] || [];
   const currentPrice = calculateCustomizerPrice({
     fit,
     style,
@@ -84,7 +97,7 @@ export function CustomizerControls({
       const isCurrentlyNonStretch = nonStretchGroup?.fabrics.some(f => f.id === selectedFabricId);
       if (isCurrentlyNonStretch) {
         setSelectedFabricId('algodon');
-        setSelectedColorId('rosa');
+        setSelectedColorId('blanco');
       }
     }
   };
@@ -141,15 +154,11 @@ export function CustomizerControls({
 
       {/* Tab Content Body */}
       <div className="customizer-tab-body">
+        {availabilityNotice && <p role="status">{availabilityNotice}</p>}
         {/* TAB 1: FIT */}
         {activeTab === 'fit' && (
           <div className="tab-pane animate-fadeIn">
-            <div className="pane-header">
-              <h4 className="pane-title">Selecciona el tipo de calce</h4>
-              <p className="pane-desc">
-                Elige entre un ajuste entallado al cuerpo o una silueta suelta y vaporosa.
-              </p>
-            </div>
+
 
             <div className="options-grid-2">
               {FIT_OPTIONS.map((f) => {
@@ -166,8 +175,8 @@ export function CustomizerControls({
                       {isSelected && <span className="card-check"><Check size={14} /></span>}
                     </div>
                     <div className="card-title">{f.name}</div>
-                    <div className="card-subtitle">{f.subtitle}</div>
-                    <div className="card-desc">{f.description}</div>
+
+
                   </button>
                 );
               })}
@@ -178,14 +187,7 @@ export function CustomizerControls({
         {/* TAB 2: STYLE */}
         {activeTab === 'style' && (
           <div className="tab-pane animate-fadeIn">
-            <div className="pane-header">
-              <h4 className="pane-title">Estilo de escote y silueta</h4>
-              <p className="pane-desc">
-                {fit === 'suelto'
-                  ? 'En Fit Suelto puedes elegir entre corte Regular o Asimétrico de vanguardia.'
-                  : 'En Fit Pegado tienes disponibles cortes Regulares, Asimétricos y texturas Fruncidas.'}
-              </p>
-            </div>
+
 
             <div className="options-grid-2">
               {STYLE_OPTIONS.map((s) => {
@@ -197,7 +199,7 @@ export function CustomizerControls({
                     type="button"
                     disabled={!isAllowed}
                     className={`option-card ${isSelected ? 'selected' : ''} ${!isAllowed ? 'disabled' : ''}`}
-                    onClick={() => isAllowed && setStyle(s.id)}
+                    onClick={() => isAllowed && selectCut(s.id, length)}
                   >
                     <div className="card-top">
                       {!isAllowed ? (
@@ -208,7 +210,7 @@ export function CustomizerControls({
                       {isSelected && <span className="card-check"><Check size={14} /></span>}
                     </div>
                     <div className="card-title">{s.name}</div>
-                    <div className="card-desc">{s.description}</div>
+
                   </button>
                 );
               })}
@@ -219,10 +221,7 @@ export function CustomizerControls({
         {/* TAB 3: LENGTH */}
         {activeTab === 'length' && (
           <div className="tab-pane animate-fadeIn">
-            <div className="pane-header">
-              <h4 className="pane-title">Largo de la prenda</h4>
-              <p className="pane-desc">Define la altura perfecta para tu top strapless.</p>
-            </div>
+
 
             <div className="options-grid-3">
               {LENGTH_OPTIONS.map((l) => {
@@ -232,13 +231,13 @@ export function CustomizerControls({
                     key={l.id}
                     type="button"
                     className={`option-card ${isSelected ? 'selected' : ''}`}
-                    onClick={() => setLength(l.id)}
+                    onClick={() => selectCut(style, l.id)}
                   >
                     <div className="card-top">
                       {isSelected && <span className="card-check"><Check size={14} /></span>}
                     </div>
                     <div className="card-title">{l.name}</div>
-                    <div className="card-desc">{l.description}</div>
+
                   </button>
                 );
               })}
@@ -249,24 +248,17 @@ export function CustomizerControls({
         {/* TAB 4: ACCESSORIES */}
         {activeTab === 'accessories' && (
           <div className="tab-pane animate-fadeIn">
-            <div className="pane-header">
-              <h4 className="pane-title">Accesorios a juego</h4>
-              <p className="pane-desc">
-                Agrega tirantes o una bufanda skinny confeccionada en la misma tela de tu top.
-              </p>
-            </div>
+
 
             <div className="accessories-list">
               {/* Tirantes */}
               <div className={`accessory-item ${withStraps ? 'active' : ''}`}>
                 <div className="accessory-info">
                   <div className="accessory-title">
-                    <span>Tirantes a tono</span>
+                    <span>Tirantes</span>
                     <span className="accessory-price">+{formatPrice(120)}</span>
                   </div>
-                  <div className="accessory-desc">
-                    Tirantes finos y ajustables confeccionados en la misma tela elegida.
-                  </div>
+
                 </div>
                 <button
                   type="button"
@@ -281,12 +273,10 @@ export function CustomizerControls({
               <div className={`accessory-item ${withScarf ? 'active' : ''}`}>
                 <div className="accessory-info">
                   <div className="accessory-title">
-                    <span>Bufanda Skinny Chic</span>
+                    <span>Bufanda</span>
                     <span className="accessory-price">+{formatPrice(190)}</span>
                   </div>
-                  <div className="accessory-desc">
-                    Bufanda estilizada a juego en la misma tela. No compatible con Mezclilla, Lentejuelas ni Bordado.
-                  </div>
+
                 </div>
                 <button
                   type="button"
@@ -298,26 +288,14 @@ export function CustomizerControls({
               </div>
             </div>
 
-            <div className="compatibility-note">
-              <Info size={16} />
-              <span>
-                Al seleccionar cualquier color o tela, se aplicará automáticamente tanto al top como a los tirantes y bufanda de manera sincronizada.
-              </span>
-            </div>
+
           </div>
         )}
 
         {/* TAB 5: FABRICS & COLORS */}
         {activeTab === 'fabrics' && (
           <div className="tab-pane animate-fadeIn">
-            <div className="pane-header">
-              <h4 className="pane-title">Telas y Colores Exclusivos</h4>
-              <p className="pane-desc">
-                {fit === 'pegado'
-                  ? 'Fit Pegado requiere telas elastizadas con stretch.'
-                  : 'Fit Suelto es compatible con todas nuestras telas.'}
-              </p>
-            </div>
+
 
             {FABRIC_GROUPS.map((group) => {
               const isGroupDisabled = fit === 'pegado' && !group.isStretch;
@@ -364,10 +342,16 @@ export function CustomizerControls({
                                     className={`swatch-btn ${isColorSelected ? 'active' : ''}`}
                                     style={{
                                       backgroundColor: c.hex,
+                                      backgroundImage: c.pattern || c.sparkle || c.sheen ? `url("${getAssetUrl(c.swatch)}")` : undefined,
+                                      backgroundSize: 'cover',
+                                      backgroundPosition: 'center',
                                       borderColor: c.border || (isColorSelected ? '#4a1e1b' : 'rgba(0,0,0,0.15)')
                                     }}
                                     onClick={() => setSelectedColorId(c.id)}
-                                    title={c.name}
+                                    disabled={!matchVariantName(c.id, availableVariants)}
+                                    title={matchVariantName(c.id, availableVariants) ? c.name : c.name + ' — no disponible en este corte'}
+                                    aria-label={c.name}
+                                    aria-pressed={isColorSelected}
                                   >
                                     {isColorSelected && (
                                       <Check
@@ -396,12 +380,7 @@ export function CustomizerControls({
         {/* TAB 6: SIZE */}
         {activeTab === 'size' && (
           <div className="tab-pane animate-fadeIn">
-            <div className="pane-header">
-              <h4 className="pane-title">Talla y Medidas</h4>
-              <p className="pane-desc">
-                Elige tu talla estándar o ingresa tus medidas exactas en centímetros para confección personalizada.
-              </p>
-            </div>
+
 
             <div className="sizes-grid">
               {SIZES.map((s) => {
@@ -460,7 +439,7 @@ export function CustomizerControls({
       <div className="customizer-footer-bar">
         <div className="price-and-config-summary">
           <div className="config-line">
-            <strong>Top Strapless</strong> • {fit === 'pegado' ? 'Pegado' : 'Suelto'} • {style} • {length}
+            <strong>Top Strapless</strong> • {fit === 'pegado' ? 'Pegado' : 'Suelto'} • {STYLE_OPTIONS.find(option => option.id === style)?.name} • {LENGTH_OPTIONS.find(option => option.id === length)?.name}
             {withStraps ? ' + Tirantes' : ''}
             {withScarf ? ' + Bufanda' : ''}
           </div>
@@ -483,7 +462,7 @@ export function CustomizerControls({
                 name: `Top Strapless Personalizado (${fit} - ${style})`,
                 price: currentPrice,
                 isCustom3D: true,
-                image: '/assets/patterns/l1.png',
+                image: getAssetUrl('assets/patterns/l1.png'),
                 customConfig: {
                   fit,
                   style,

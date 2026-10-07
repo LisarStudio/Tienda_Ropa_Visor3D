@@ -118,3 +118,8 @@
     min-height: auto;
   }
 }
+
+/* Prevent intrinsic canvas and tab widths from widening the mobile grid. */
+.customizer-grid-layout { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); }
+.customizer-col-viewer, .customizer-col-controls { min-width: 0; }
+@media(max-width:1024px) { .customizer-grid-layout { grid-template-columns: minmax(0,1fr); } }

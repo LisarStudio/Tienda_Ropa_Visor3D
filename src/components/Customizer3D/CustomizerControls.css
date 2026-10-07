@@ -592,3 +592,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+.customizer-controls-panel, .customizer-tab-body, .tab-pane { min-width:0; max-width:100%; }
+.customizer-tabs-nav { flex-wrap:wrap; }
+.swatch-btn { width:40px; height:40px; }
+@media(max-width:480px) { .options-grid-2,.options-grid-3 { grid-template-columns:minmax(0,1fr); } .customizer-footer-bar { flex-direction:column; align-items:stretch; } .customizer-cta-group { width:100%; } .accessory-info { min-width:0; } .customizer-tab-body { padding:16px; } }
+
+.swatch-btn:disabled { opacity:.35; cursor:not-allowed; }

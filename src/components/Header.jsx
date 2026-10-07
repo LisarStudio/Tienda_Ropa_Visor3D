@@ -21,12 +21,7 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
     if (categorySlug && onSelectCategory) {
       onSelectCategory(categorySlug);
     }
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      window.location.hash = sectionId;
-    }
+    window.location.hash = ['best-sellers', 'new-in'].includes(categorySlug) ? categorySlug : sectionId;
   };
 
   return (

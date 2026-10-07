@@ -3,7 +3,7 @@
 export const FIT_OPTIONS = [
   {
     id: 'pegado',
-    name: 'Fit Pegado (Fitted)',
+    name: 'Fit pegado',
     subtitle: 'Ajuste ceñido y esculpido',
     description: 'Diseño anatómico de alta compresión. Compatible exclusivamente con telas con stretch para un calce perfecto.',
     badge: 'Telas Stretch',
@@ -11,7 +11,7 @@ export const FIT_OPTIONS = [
   },
   {
     id: 'suelto',
-    name: 'Fit Suelto (Relaxed)',
+    name: 'Fit suelto',
     subtitle: 'Caída holgada y fluida',
     description: 'Corte vaporoso y elegante con libertad de movimiento. Compatible con todas las telas (con y sin stretch).',
     badge: 'Todas las telas',
@@ -54,7 +54,7 @@ export const LENGTH_OPTIONS = [
   },
   {
     id: 'regular',
-    name: 'Medio / Regular',
+    name: 'Regular',
     description: 'Largo clásico a la altura de la cadera alta'
   },
   {
@@ -76,7 +76,7 @@ export const ACCESSORY_OPTIONS = [
   },
   {
     id: 'bufanda',
-    name: 'Bufanda Skinny Chic',
+    name: 'Bufanda',
     subtitle: 'Bufanda a juego en misma tela',
     description: 'Accesorio parisino confeccionado en la misma tela elegida. No disponible en Mezclilla, Lentejuelas ni Bordado.',
     price: 190, // $190 MXN
@@ -306,85 +306,21 @@ export function getModelFileName(fit, style, length) {
   }
 }
 
-// Normalizes a color / variant name to find the best match in the GLB variants list
-export function matchVariantName(targetColorId, availableVariants = []) {
-  if (!availableVariants || availableVariants.length === 0) return null;
-  const cleanTarget = (targetColorId || '').toLowerCase().trim().replace(/_/g, ' ');
-  
-  // Exact match
-  const exact = availableVariants.find(v => v.toLowerCase().trim() === cleanTarget);
-  if (exact) return exact;
-
-  // Specific aliases & typos in 3D models
-  if (cleanTarget.includes('mezclilla') || cleanTarget.includes('denim') || cleanTarget.includes('mezcilla')) {
-    const m = availableVariants.find(v => v.toLowerCase().includes('mezc') || v.toLowerCase().includes('denim'));
-    if (m) return m;
-  }
-  if (cleanTarget.includes('lentejuela') || cleanTarget.includes('lentejuels')) {
-    const colorWord = cleanTarget.replace(/lentejuelas?|lentejuels?/g, '').trim();
-    if (colorWord) {
-      const m = availableVariants.find(v => (v.toLowerCase().includes('lentej') || v.toLowerCase().includes('lentejuels')) && v.toLowerCase().includes(colorWord));
-      if (m) return m;
-    }
-    const fallback = availableVariants.find(v => v.toLowerCase().includes('lentej') || v.toLowerCase().includes('lentejuels'));
-    if (fallback) return fallback;
-  }
-  if (cleanTarget.includes('rayas') || cleanTarget.includes('raya')) {
-    const colorWord = cleanTarget.replace(/rayas?|candy|acanalado/g, '').trim();
-    if (colorWord) {
-      const m = availableVariants.find(v => (v.toLowerCase().includes('raya') || v.toLowerCase().includes('amrillo')) && (v.toLowerCase().includes(colorWord) || (colorWord === 'amarillo' && v.toLowerCase().includes('amrillo'))));
-      if (m) return m;
-    }
-  }
-  if (cleanTarget.includes('polka')) {
-    const colorWord = cleanTarget.replace(/polka|dots?/g, '').trim();
-    const m = availableVariants.find(v => v.toLowerCase().includes('polk') && v.toLowerCase().includes(colorWord));
-    if (m) return m;
-  }
-  if (cleanTarget.includes('bordado')) {
-    const colorWord = cleanTarget.replace(/bordado/g, '').trim();
-    const m = availableVariants.find(v => (v.toLowerCase().includes('bordad') || v.toLowerCase().includes('borad')) && v.toLowerCase().includes(colorWord));
-    if (m) return m;
-  }
-  if (cleanTarget.includes('cuadros')) {
-    const colorWord = cleanTarget.replace(/cuadros/g, '').trim();
-    const m = availableVariants.find(v => v.toLowerCase().includes('cuadro') && v.toLowerCase().includes(colorWord));
-    if (m) return m;
-  }
-  if (cleanTarget.includes('stripes')) {
-    const colorWord = cleanTarget.replace(/stripes/g, '').trim();
-    const m = availableVariants.find(v => v.toLowerCase().includes('stripe') && v.toLowerCase().includes(colorWord));
-    if (m) return m;
-  }
-  if (cleanTarget.includes('satin')) {
-    const colorWord = cleanTarget.replace(/satin/g, '').trim();
-    const m = availableVariants.find(v => v.toLowerCase().includes('satin') && v.toLowerCase().includes(colorWord));
-    if (m) return m;
-  }
-  if (cleanTarget.includes('mesh fl')) {
-    const colorWord = cleanTarget.replace(/mesh\s+fl/g, '').trim();
-    const m = availableVariants.find(v => v.toLowerCase().includes('mesh fl') && v.toLowerCase().includes(colorWord));
-    if (m) return m;
-  }
-
-  // Word overlap
-  const targetWords = cleanTarget.split(' ').filter(Boolean);
-  let bestMatch = null;
-  let bestScore = -1;
-  for (const v of availableVariants) {
-    const vLower = v.toLowerCase();
-    let score = 0;
-    for (const w of targetWords) {
-      if (vLower.includes(w)) score += 3;
-    }
-    if (vLower.split(' ').length === targetWords.length) score += 1;
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = v;
-    }
-  }
-
-  return bestMatch || availableVariants[0];
+// Names verified against the identical material definitions in regular.glb.
+const CROP_VARIANTS = ["Blanco","Negro","Rojo","Amarillo","Beige","Cafe","Rosa","Azul cielo","Azul marino","vino","Mesh fl negro","Mesh fl cafe","rayas amarillo","rayas rosa","Rayas cafe","Rayas azul","Mesh vino","Mesh negro","Mesh Blanco","Mesh cafe","Encaje blanco","Encaje negro","Mesh leopardo","Rayas rojo","Lentejuelas blanco","Lentejuelas negro","lentejuelas rojo","lentejuelas rosa","lentejuelas plateado","lentejuelas azul marino","brillos vino","Brillos cafe"];
+export function normalizeVariantName(value) {
+ return (value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/_/g, ' ').replace(/\brays\b/g, 'rayas').replace(/\braya\b/g, 'rayas').replace(/amrillo/g, 'amarillo').replace(/boradado/g, 'bordado').replace(/mezcilla|mezclila/g, 'mezclilla').replace(/lentejuelqs/g, 'lentejuelas').replace(/\blentejuela\b/g, 'lentejuelas').replace(/negrp/g, 'negro').replace(/plateada/g, 'plateado').replace(/\bbeie\b/g, 'beige').replace(/polks/g, 'polka').replace(/lentejuels/g, 'lentejuelas').replace(/lentejuelas azul marino/g, 'lentejuelas azul').replace(/\s+/g, ' ').trim();
+}
+export function matchVariantName(target, variants = []) {
+ const normalized = normalizeVariantName(target);
+ const exact = variants.find(v => normalizeVariantName(v) === normalized);
+ if (exact) return exact;
+ // This export has 32 unnamed colorways, with verified material order.
+ if (variants.length === 32 && variants[0] === 'Default Colorway' && variants.slice(1).every((v,i) => v === 'Colorway ' + (i+1))) {
+  const index = CROP_VARIANTS.findIndex(v => normalizeVariantName(v) === normalized);
+  return index < 0 ? null : variants[index];
+ }
+ return null;
 }
 
 // Calculates dynamic price based on selections (MXN)
@@ -404,4 +340,22 @@ export function calculateCustomizerPrice(config) {
   }
 
   return basePrice;
+}
+
+// Keep original variant IDs while presenting the client's fabric families.
+const fabricNames = {algodon:'Algodón',mesh:'Mesh','rib rayas':'Rayas',encaje:'Encaje',lentejuelas:'Lentejuelas',brillos:'Brillos',polka:'Polka dots',cuadros:'Cuadros',bordado:'Bordado',stripes:'Rayas verticales',mezclilla:'Mezclilla denim',satin:'Satín'};
+for (const group of FABRIC_GROUPS) {
+ for (const [sourceId, targetId] of [['mesh fl','mesh'],['raya','rib rayas'],['flores','bordado']]) {
+  const source = group.fabrics.find(f=>f.id===sourceId);
+  const target = group.fabrics.find(f=>f.id===targetId);
+  if (source && target) { target.colors.push(...source.colors); group.fabrics=group.fabrics.filter(f=>f!==source); }
+ }
+ for (const fabric of group.fabrics) {
+  fabric.name = fabricNames[fabric.id] || fabric.name;
+  for (const color of fabric.colors) {
+   const words = color.id.replace(/^(mesh fl|mesh|rayas|encaje|lentejuelas|brillos|polka|cuadros|bordado|stripes|flores|satin)\s*/, '').replace('mezclilla','azul').replace('cafe','café');
+   color.name = words.charAt(0).toUpperCase()+words.slice(1);
+   color.swatch = 'assets/swatches/'+encodeURIComponent(color.id)+'.png';
+  }
+ }
 }
