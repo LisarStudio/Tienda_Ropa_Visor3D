@@ -42,7 +42,7 @@ export function FlowResponseModal({ paymentDetails, onClose }) {
             {isOxxo ? '¡Ficha de Pago OXXO Pay Generada!' : isSpei ? '¡Orden Registrada para Pago SPEI!' : '¡Pedido Confirmado con Éxito!'}
           </h2>
           <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0 }}>
-            Gracias por comprar en <strong>{brand.name} Atelier México</strong>. Tu orden está siendo preparada artesanalmente.
+            Gracias por comprar en <strong>{brand.name}</strong>. Tu orden está siendo preparada artesanalmente.
           </p>
         </div>
 
@@ -85,7 +85,7 @@ export function FlowResponseModal({ paymentDetails, onClose }) {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem', color: '#166534' }}>
               <div><strong>Banco Destino:</strong> BBVA México / STP</div>
-              <div><strong>Beneficiario:</strong> Daniela Atelier MX S.A. de C.V.</div>
+              <div><strong>Beneficiario:</strong> Ninna Wear</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px dashed #22c55e', padding: '0.6rem 0.8rem', borderRadius: '6px', marginTop: '0.3rem' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: '#15803d' }}>CLABE Interbancaria (18 dígitos):</span>

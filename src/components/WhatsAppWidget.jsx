@@ -7,7 +7,7 @@ export function WhatsAppWidget() {
   const brand = clientData.brand;
   return (
     <a
-      href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola Daniela Atelier, me gustaría consultar por una prenda a medida.')}`}
+      href={`https://wa.me/${brand.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola Ninna Wear, me gustaría consultar por una prenda a medida.')}`}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-widget"

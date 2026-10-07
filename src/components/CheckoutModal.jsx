@@ -64,7 +64,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, totalAmount, orderSu
           return `• ${item.quantity}x ${item.name} (${item.selectedSize || 'Estándar'}) - ${formatPrice(item.price * item.quantity)}`;
         }).join('\n');
 
-        const text = `🌸 *NUEVO PEDIDO DANIELA ATELIER MÉXICO*\n\n` +
+        const text = `🌸 *NUEVO PEDIDO NINNA WEAR*\n\n` +
           `*Orden:* #${orderId}\n` +
           `*Cliente:* ${formData.name}\n` +
           `*Teléfono:* ${formData.phone}\n` +
@@ -101,7 +101,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, totalAmount, orderSu
           <div className="checkout-header-title">
             <ShieldCheck size={24} className="icon-shield" />
             <div>
-              <h3>Finalizar Compra • Daniela Atelier México</h3>
+              <h3>Finalizar Compra • Ninna Wear</h3>
               <p>Envío seguro a todo México con FedEx, DHL y Estafeta</p>
             </div>
           </div>

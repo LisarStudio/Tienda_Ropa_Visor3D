@@ -34,7 +34,7 @@ export function CartDrawer({
   };
 
   const generateWhatsAppOrderText = () => {
-    let text = `¡Hola Daniela Atelier México! Me gustaría encargar las siguientes prendas de mi carrito:\n\n`;
+    let text = `¡Hola Ninna Wear! Me gustaría encargar las siguientes prendas de mi carrito:\n\n`;
     cartItems.forEach((item, i) => {
       text += `${i + 1}. *${item.name}* (Cant: ${item.quantity}) - ${formatPrice(item.price * item.quantity)}\n`;
       if (item.customConfig) {
@@ -162,7 +162,7 @@ export function CartDrawer({
                 <Tag size={15} className="coupon-icon" />
                 <input
                   type="text"
-                  placeholder="Cupón (Ej: DANIELA10)"
+                  placeholder="Código de descuento"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   className="coupon-input"
