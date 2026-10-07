@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
+import { StyleShortcuts } from './StyleShortcuts';
 import { Hero } from './Hero';
 import { CustomizerSection } from './Customizer3D/CustomizerSection';
 import { CategoryFilter } from './CategoryFilter';
@@ -31,5 +32,5 @@ export function HomePage({onSelectProduct, activeCategory='todos', onSelectCateg
  }
  if(page==='faq')return <main><FAQSection/></main>;
  if(catalogPage)return <main className="container ready-to-wear-section"><h1>{page==='best-sellers'?'Best sellers':page==='new-in'?'New in':'Catálogo'}</h1><CategoryFilter categories={clientData.categories} activeCategory={category} onSelectCategory={cat=>{onSelectCategory(cat);window.location.hash='catalogo-section';}} sortBy={sortBy} onSortChange={onSortChange} totalItems={products.length}/><ProductGrid products={products} category={category} onSelectProduct={onSelectProduct} onCustomizeClick={customize}/></main>;
- return <main className="brand-homepage-container"><Hero onCustomizeClick={()=>{window.location.hash='personaliza-tu-prenda';}} onExploreClick={()=>{window.location.hash='catalogo-section';}}/><section className="container home-category-links">{[['personaliza-tu-prenda','Personaliza tu prenda'],['catalogo-section','Catálogo'],['best-sellers','Best sellers'],['new-in','New in']].map(([id,label])=><a key={id} href={'#'+id}>{label} →</a>)}</section></main>;
+ return <main className="brand-homepage-container"><Hero onCustomizeClick={()=>{window.location.hash='personaliza-tu-prenda';}} onExploreClick={()=>{window.location.hash='catalogo-section';}}/><StyleShortcuts/></main>;
 }

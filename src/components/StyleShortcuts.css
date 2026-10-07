@@ -1,0 +1,22 @@
+/* Glossy vector charms stay crisp at every screen size. */
+.style-shortcuts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; padding-top:32px; padding-bottom:48px; }
+.style-shortcut { --charm-light:#ffe7f0; --charm-mid:#f2a6c1; --charm-dark:#c65e85; position:relative; min-width:0; display:flex; flex-direction:column; overflow:hidden; padding:21px; border:1px solid #f4e1e8; border-radius:26px; background:linear-gradient(145deg,#fff9fc,#fbe8ee); color:#492c34; text-decoration:none; box-shadow:0 3px 2px #7c345003,0 12px 30px -22px #86355355,inset 0 1px 0 #fff; transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease; }
+.style-shortcut--lavender { --charm-light:#f2edff; --charm-mid:#cbb7ef; --charm-dark:#9474c5; background:linear-gradient(145deg,#fcfaff,#efe9fa); border-color:#e9e0f3; }
+.style-shortcut--peach { --charm-light:#ffe5db; --charm-mid:#f6aa9d; --charm-dark:#d3716e; background:linear-gradient(145deg,#fffaf6,#fceae0); border-color:#f2e4db; }
+.style-shortcut--butter { --charm-light:#fffbdc; --charm-mid:#f3d880; --charm-dark:#c7a14a; background:linear-gradient(145deg,#fffef6,#f8f0d6); border-color:#ede7cf; }
+.shortcut-tag { align-self:flex-start; padding:5px 9px; border-radius:100px; border:1px solid #ffffffcf; background:#ffffff70; font-size:.58rem; font-weight:700; letter-spacing:.12em; line-height:1.3; color:#6b5059; }
+.shortcut-art { position:relative; display:grid; place-items:center; height:134px; margin:0 0 9px; }
+.shortcut-charm { position:relative; z-index:1; width:112px; height:112px; overflow:visible; filter:drop-shadow(0 12px 7px #85546622); transform:rotate(-11deg); transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+.style-shortcut--lavender .shortcut-charm { transform:rotate(10deg); }
+.style-shortcut--butter .shortcut-charm { transform:rotate(12deg); }
+.shortcut-orbit { position:absolute; width:106px; height:106px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#ffffffb0,#ffffff10 72%); border:1px solid #ffffff80; }
+.shortcut-twinkle { position:absolute; top:18px; right:calc(50% - 73px); font-size:19px; color:var(--charm-dark); opacity:.65; }
+.shortcut-caption { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:auto; }
+.shortcut-caption h2 { font-family:var(--font-sans); font-size:1rem; font-weight:700; line-height:1.3; letter-spacing:-.035em; margin:0; }
+.shortcut-caption p { margin:7px 0 0; font-size:.7rem; line-height:1.5; color:#765e65; }
+.shortcut-arrow { display:grid; place-items:center; flex-shrink:0; width:33px; height:33px; border-radius:50%; background:#ffffffa6; border:1px solid #fff; transition:background .25s,transform .25s; }
+.style-shortcut:focus-visible { outline:3px solid #78405b; outline-offset:5px; }
+@media(hover:hover) { .style-shortcut:hover { transform:translateY(-5px); box-shadow:0 20px 34px -22px #86355370; border-color:var(--charm-mid); } .style-shortcut:hover .shortcut-charm { transform:translateY(-5px) rotate(2deg) scale(1.06); } .style-shortcut:hover .shortcut-arrow { background:white; transform:rotate(8deg); } }
+@media(max-width:1000px) { .style-shortcuts { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; } }
+@media(max-width:480px) { .style-shortcuts { gap:10px; padding-top:22px; padding-bottom:32px; } .style-shortcut { padding:14px 12px; border-radius:21px; } .shortcut-art { height:108px; margin-bottom:6px; } .shortcut-charm { width:91px; height:91px; } .shortcut-orbit { width:86px; height:86px; } .shortcut-twinkle { top:12px; right:calc(50% - 54px); font-size:14px; } .shortcut-tag { font-size:.48rem; padding:5px 7px; letter-spacing:.08em; } .shortcut-caption { align-items:flex-start; } .shortcut-caption h2 { font-size:.85rem; } .shortcut-caption p { font-size:.64rem; } .shortcut-arrow { width:25px; height:25px; } .shortcut-arrow svg { width:15px; height:15px; } }
+@media(prefers-reduced-motion:reduce) { .style-shortcut,.shortcut-charm,.shortcut-arrow { transition:none; } .style-shortcut:hover,.style-shortcut:hover .shortcut-charm { transform:none; } }
