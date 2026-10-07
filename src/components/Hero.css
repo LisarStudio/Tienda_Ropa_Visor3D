@@ -307,3 +307,12 @@
     margin-top: 6px;
   }
 }
+
+/* Editorial fabric banner replaces the repeated brand artwork. */
+.hero-visual-card { padding:0; border-radius:28px; overflow:hidden; background:#fffaf6; box-shadow:0 22px 60px -25px #73473740; }
+.hero-card-image-wrapper { border-radius:0; }
+.hero-card-badge-3d { background:#fffaf0e6; color:#684839; border:1px solid #fff9; box-shadow:0 3px 15px #68483912; font-weight:600; font-size:.62rem; letter-spacing:.13em; top:20px; left:20px; }
+.hero-card-footer-info { margin:0; border:0; border-radius:0; padding:20px; background:#fffaf6; }
+.card-footer-text h4 { font-size:1rem; font-weight:500; }
+@media(max-width:480px) { .hero-visual-card { padding:0; border-radius:22px; } .hero-card-footer-info { padding:16px; } .hero-card-badge-3d { top:14px; left:14px; font-size:.55rem; } }
+@media(prefers-reduced-motion:reduce) { .hero-card-img { transition:none; } .hero-visual-card:hover .hero-card-img { transform:none; } }

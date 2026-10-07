@@ -1,11 +1,10 @@
 import React from 'react';
-import { ArrowRight, Sparkles, Scissors, Heart, ShieldCheck, Play } from 'lucide-react';
-import { clientData, getAssetUrl } from '../data/clientData';
+import { ArrowRight, Sparkles, Scissors } from 'lucide-react';
+import { getAssetUrl } from '../data/clientData';
 import './Hero.css';
 
 export function Hero({ onCustomizeClick, onExploreClick }) {
-  const brand = clientData.brand;
-  const heroPattern = getAssetUrl('assets/patterns/l9.png');
+  const heroPattern = getAssetUrl('assets/editorial/atelier-blush-banner.png');
 
   return (
     <section className="atelier-hero-section">
@@ -25,7 +24,7 @@ export function Hero({ onCustomizeClick, onExploreClick }) {
           </h1>
 
           <p className="hero-description-lead">
-            Bienvenida al atelier de <strong>{brand.name}</strong>. Confeccionamos prendas femeninas exclusivas hechas a mano. Explora nuestro catálogo listo para vestir o crea tu propio top strapless personalizado en tiempo real en nuestro visor 3D.
+            Confeccionamos prendas femeninas exclusivas hechas a mano. Explora nuestro catálogo listo para vestir o crea tu propio top strapless personalizado en tiempo real en nuestro visor 3D.
           </p>
 
           <div className="hero-feature-points">
@@ -71,26 +70,29 @@ export function Hero({ onCustomizeClick, onExploreClick }) {
             <div className="hero-card-image-wrapper">
               <img
                 src={heroPattern}
-                alt="Ninna Wear Fashion Preview"
+                alt="Inspiración de diseño: top rosa drapeado entre telas crema, cintas y muestras de tejido"
+                width="1254"
+                height="1254"
+                fetchPriority="high"
                 className="hero-card-img"
               />
               <div className="hero-card-badge-3d">
                 <Sparkles size={16} />
-                <span>3D INTERACTIVE STUDIO</span>
+                <span>IMAGINA. COMBINA. CREA.</span>
               </div>
             </div>
 
             <div className="hero-card-footer-info">
               <div className="card-footer-text">
-                <h4>Top Strapless Signature</h4>
-                <p>Fit Pegado o Suelto • Confección a mano</p>
+                <h4>Tu próxima prenda empieza contigo</h4>
+                <p>Inspírate y dale tu propio estilo</p>
               </div>
               <button
                 type="button"
                 className="card-quick-try-btn"
                 onClick={onCustomizeClick}
               >
-                <span>Probar en 3D</span>
+                <span>Crear mi top</span>
                 <ArrowRight size={15} />
               </button>
             </div>

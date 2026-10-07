@@ -66,10 +66,6 @@ export function Header({ cartCount, onOpenCart, onSelectCategory, searchQuery, o
               alt={brand.name}
               className="brand-logo-img"
             />
-            <div className="brand-logo-text-wrapper">
-              <span className="brand-primary-name">{brand.name}</span>
-              <span className="brand-secondary-tagline desktop-only">{brand.tagline}</span>
-            </div>
           </a>
 
           {/* Desktop Navigation Links */}
